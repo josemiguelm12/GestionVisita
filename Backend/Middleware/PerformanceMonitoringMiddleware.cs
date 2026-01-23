@@ -22,6 +22,12 @@ public class PerformanceMonitoringMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         var startTime = DateTime.UtcNow;
+        
+        // Hook into the response body stream to add headers before it's sent
+        var originalBodyStream = context.Response.Body;
+        
+        using var responseBody = new MemoryStream();
+        context.Response.Body = responseBody;
 
         await _next(context);
 
@@ -46,7 +52,14 @@ public class PerformanceMonitoringMiddleware
             );
         }
 
-        // Add performance header
-        context.Response.Headers["X-Response-Time-Ms"] = duration.ToString("0");
+        // Add performance header before copying response
+        if (!context.Response.HasStarted)
+        {
+            context.Response.Headers["X-Response-Time-Ms"] = duration.ToString("0");
+        }
+
+        // Copy the response back to the original stream
+        responseBody.Seek(0, SeekOrigin.Begin);
+        await responseBody.CopyToAsync(originalBodyStream);
     }
 }

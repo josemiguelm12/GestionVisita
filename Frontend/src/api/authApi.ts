@@ -1,5 +1,5 @@
 import api from './axiosConfig';
-import { LoginRequest, LoginResponse, User } from '../types/auth.types';
+import type{ LoginRequest, LoginResponse, User } from '../types/auth.types';
 
 export const authApi = {
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {

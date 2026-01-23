@@ -1,37 +1,37 @@
-# ?? Sistema de Gestión de Visitas - ASP.NET Web API
+# ?? Sistema de Gestiï¿½n de Visitas - ASP.NET Web API
 
-Sistema completo de gestión de visitas migrado de Laravel + Vue.js a **ASP.NET 10 Web API + React + SQL Server**, preparado para **Azure**.
+Sistema completo de gestiï¿½n de visitas migrado de Laravel + Vue.js a **ASP.NET 10 Web API + React + SQL Server**, preparado para **Azure**.
 
 ## ?? Tabla de Contenidos
 
-- [Tecnologías](#tecnologías)
+- [Tecnologï¿½as](#tecnologï¿½as)
 - [Prerequisitos](#prerequisitos)
-- [Configuración Inicial](#configuración-inicial)
+- [Configuraciï¿½n Inicial](#configuraciï¿½n-inicial)
 - [Migraciones de Base de Datos](#migraciones-de-base-de-datos)
-- [Ejecución del Proyecto](#ejecución-del-proyecto)
+- [Ejecuciï¿½n del Proyecto](#ejecuciï¿½n-del-proyecto)
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Despliegue en Azure](#despliegue-en-azure)
 
 ---
 
-## ??? Tecnologías
+## ??? Tecnologï¿½as
 
 ### Backend
-- **.NET 10** - Framework principal
-- **Entity Framework Core 10** - ORM para SQL Server
+- **.NET 8** - Framework principal
+- **Entity Framework Core 8** - ORM para SQL Server
 - **SQL Server** - Base de datos relacional
-- **JWT** - Autenticación
+- **JWT** - Autenticaciï¿½n
 - **Microsoft Identity Platform** - SSO con Microsoft 365
-- **Microsoft Graph API** - Integración con Office 365
+- **Microsoft Graph API** - Integraciï¿½n con Office 365
 - **Serilog** - Logging avanzado
 - **AutoMapper** - Mapeo objeto-objeto
-- **Swagger/OpenAPI** - Documentación de API
+- **Swagger/OpenAPI** - Documentaciï¿½n de API
 
-### Frontend (próximamente)
+### Frontend (prï¿½ximamente)
 - **React 18** - Framework UI
-- **TypeScript** - Tipado estático
+- **TypeScript** - Tipado estï¿½tico
 - **Vite** - Build tool
-- **React Router** - Navegación
+- **React Router** - Navegaciï¿½n
 - **Axios** - Cliente HTTP
 - **Tailwind CSS** - Framework CSS
 
@@ -39,15 +39,15 @@ Sistema completo de gestión de visitas migrado de Laravel + Vue.js a **ASP.NET 1
 - **Azure SQL Database** - Base de datos
 - **Azure App Service** - Hosting de API
 - **Azure Static Web Apps** - Hosting de React
-- **Azure Key Vault** - Gestión de secretos
-- **Azure Cache for Redis** - Caché distribuido
+- **Azure Key Vault** - Gestiï¿½n de secretos
+- **Azure Cache for Redis** - Cachï¿½ distribuido
 - **Application Insights** - Monitoreo
 
 ---
 
 ## ? Prerequisitos
 
-1. **.NET 10 SDK** - [Descargar](https://dotnet.microsoft.com/download/dotnet/10.0)
+1. **.NET 8 SDK** - [Descargar](https://dotnet.microsoft.com/download/dotnet/10.0)
 2. **SQL Server 2022** o **SQL Server Express** - [Descargar](https://www.microsoft.com/sql-server/sql-server-downloads)
 3. **Visual Studio 2025** o **VS Code** con extensiones de C#
 4. **Node.js 20+** (para el frontend React)
@@ -60,7 +60,7 @@ Sistema completo de gestión de visitas migrado de Laravel + Vue.js a **ASP.NET 1
 
 ---
 
-## ?? Configuración Inicial
+## ?? Configuraciï¿½n Inicial
 
 ### 1. Clonar el Repositorio
 
@@ -77,7 +77,7 @@ dotnet restore
 
 ### 3. Configurar Base de Datos
 
-Edita `appsettings.Development.json` y configura tu conexión a SQL Server:
+Edita `appsettings.Development.json` y configura tu conexiï¿½n a SQL Server:
 
 ```json
 {
@@ -87,7 +87,7 @@ Edita `appsettings.Development.json` y configura tu conexión a SQL Server:
 }
 ```
 
-**Opciones de conexión:**
+**Opciones de conexiï¿½n:**
 
 - **Windows Authentication (recomendado para desarrollo local):**
   ```
@@ -106,7 +106,7 @@ Edita `appsettings.Development.json` y configura tu conexión a SQL Server:
 
 ### 4. Configurar JWT Secret Key
 
-En `appsettings.Development.json`, asegúrate de tener configurado un secreto JWT (al menos 32 caracteres):
+En `appsettings.Development.json`, asegï¿½rate de tener configurado un secreto JWT (al menos 32 caracteres):
 
 ```json
 {
@@ -119,13 +119,13 @@ En `appsettings.Development.json`, asegúrate de tener configurado un secreto JWT
 }
 ```
 
-**?? IMPORTANTE:** En producción, almacena este secreto en **Azure Key Vault**.
+**?? IMPORTANTE:** En producciï¿½n, almacena este secreto en **Azure Key Vault**.
 
 ---
 
 ## ??? Migraciones de Base de Datos
 
-### 1. Instalar Entity Framework Tools (si no está instalado)
+### 1. Instalar Entity Framework Tools (si no estï¿½ instalado)
 
 ```powershell
 dotnet tool install --global dotnet-ef
@@ -157,7 +157,7 @@ Conecta con SSMS y verifica que existan las siguientes tablas:
 
 ---
 
-## ?? Ejecución del Proyecto
+## ?? Ejecuciï¿½n del Proyecto
 
 ### Modo Desarrollo
 
@@ -171,12 +171,12 @@ O con hot reload:
 dotnet watch run
 ```
 
-La API estará disponible en:
+La API estarï¿½ disponible en:
 - **HTTP:** `http://localhost:5000`
 - **HTTPS:** `https://localhost:5001`
 - **Swagger UI:** `https://localhost:5001/swagger`
 
-### Modo Producción (Build)
+### Modo Producciï¿½n (Build)
 
 ```powershell
 dotnet build --configuration Release
@@ -217,7 +217,7 @@ GestionVisitaAPI/
 ??? Repositories/             # Repositorios de datos
 ?   ??? Interfaces/
 ?   ??? Implementations/
-??? Services/                 # Lógica de negocio
+??? Services/                 # Lï¿½gica de negocio
 ?   ??? AuthService.cs
 ?   ??? VisitService.cs
 ?   ??? ExportService.cs
@@ -229,7 +229,7 @@ GestionVisitaAPI/
 ??? Middleware/               # Middlewares personalizados
 ?   ??? ...
 ??? Migrations/               # Migraciones de EF Core
-??? appsettings.json          # Configuración
+??? appsettings.json          # Configuraciï¿½n
 ??? appsettings.Development.json
 ??? Program.cs                # Entry point
 ??? README.md
@@ -282,40 +282,40 @@ az webapp config appsettings set --resource-group rg-gestionvisitas --name api-g
 
 ## ?? Seguridad
 
-### Mejores Prácticas
+### Mejores Prï¿½cticas
 
 1. ? **Nunca** commitear secretos en Git
-2. ? Usar **Azure Key Vault** en producción
+2. ? Usar **Azure Key Vault** en producciï¿½n
 3. ? Habilitar **HTTPS** obligatorio
 4. ? Implementar **rate limiting**
 5. ? Validar **todos** los inputs
-6. ? Usar **parameterized queries** (EF Core lo hace automáticamente)
-7. ? Habilitar **CORS** solo para orígenes confiables
+6. ? Usar **parameterized queries** (EF Core lo hace automï¿½ticamente)
+7. ? Habilitar **CORS** solo para orï¿½genes confiables
 
 ---
 
-## ?? Próximos Pasos
+## ?? Prï¿½ximos Pasos
 
 - [ ] Implementar DTOs y AutoMapper profiles
 - [ ] Crear repositorios e interfaces
 - [ ] Implementar servicios de negocio
 - [ ] Crear controladores de la API
-- [ ] Configurar autenticación JWT
+- [ ] Configurar autenticaciï¿½n JWT
 - [ ] Integrar Microsoft Graph API
-- [ ] Implementar exportación a Excel/PDF
+- [ ] Implementar exportaciï¿½n a Excel/PDF
 - [ ] Crear proyecto React frontend
 - [ ] Configurar Azure deployment pipeline
 
 ---
 
-## ?? Próximos Pasos
+## ?? Prï¿½ximos Pasos
 
 ### **? Completado hasta ahora**
 
-1. ? Configuración inicial del proyecto
+1. ? Configuraciï¿½n inicial del proyecto
 2. ? Modelos y entidades con relaciones
 3. ? DbContext con Fluent API
-4. ? Repositorios (patrón Repository)
+4. ? Repositorios (patrï¿½n Repository)
 5. ? Helpers (JWT, Password)
 
 ### **?? En Progreso - Siguiente Fase**
@@ -335,10 +335,10 @@ Los DTOs se encuentran pendientes. Necesitas crear:
 
 #### **2. Implementar los Servicios de Negocio**
 
-- `Services/AuthService.cs` - Lógica de autenticación
-- `Services/VisitService.cs` - Lógica de visitas
-- `Services/VisitorService.cs` - Lógica de visitantes
-- `Services/ExportService.cs` - Exportación Excel/PDF
+- `Services/AuthService.cs` - Lï¿½gica de autenticaciï¿½n
+- `Services/VisitService.cs` - Lï¿½gica de visitas
+- `Services/VisitorService.cs` - Lï¿½gica de visitantes
+- `Services/ExportService.cs` - Exportaciï¿½n Excel/PDF
 - `Services/LoggerService.cs` - Sistema de logs
 
 #### **3. Crear los Controladores**
@@ -348,7 +348,7 @@ Los DTOs se encuentran pendientes. Necesitas crear:
 - `Controllers/VisitorController.cs`
 - `Controllers/StatsController.cs`
 
-#### **4. Generar la Primera Migración**
+#### **4. Generar la Primera Migraciï¿½n**
 
 ```powershell
 dotnet ef migrations add InitialCreate
@@ -361,7 +361,7 @@ Ejecuta el proyecto y abre: `https://localhost:5001/swagger`
 
 ---
 
-Ver [ESTADO_PROYECTO.md](./ESTADO_PROYECTO.md) para más detalles del progreso.
+Ver [ESTADO_PROYECTO.md](./ESTADO_PROYECTO.md) para mï¿½s detalles del progreso.
 
 ---
 
@@ -369,21 +369,21 @@ Ver [ESTADO_PROYECTO.md](./ESTADO_PROYECTO.md) para más detalles del progreso.
 
 ### Error: "Cannot connect to SQL Server"
 
-**Solución:**
-1. Verifica que SQL Server esté ejecutándose
+**Soluciï¿½n:**
+1. Verifica que SQL Server estï¿½ ejecutï¿½ndose
 2. Verifica el connection string
-3. Verifica que TCP/IP esté habilitado en SQL Server Configuration Manager
+3. Verifica que TCP/IP estï¿½ habilitado en SQL Server Configuration Manager
 
 ### Error: "dotnet-ef not found"
 
-**Solución:**
+**Soluciï¿½n:**
 ```powershell
 dotnet tool install --global dotnet-ef
 ```
 
 ### Error: Migraciones no se aplican
 
-**Solución:**
+**Soluciï¿½n:**
 ```powershell
 # Eliminar base de datos y recrear
 dotnet ef database drop
@@ -394,8 +394,8 @@ dotnet ef database update
 
 ## ?? Contacto
 
-Para soporte técnico, crear un issue en el repositorio.
+Para soporte tï¿½cnico, crear un issue en el repositorio.
 
 ---
 
-**¡Desarrollado con ?? usando .NET 10 + React + Azure!**
+**ï¿½Desarrollado con ?? usando .NET 10 + React + Azure!**

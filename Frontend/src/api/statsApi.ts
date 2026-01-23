@@ -1,5 +1,5 @@
 import api from './axiosConfig';
-import { Stats, VisitsByDate } from '../types/stats.types';
+import type { Stats, VisitsByDate } from '../types/stats.types';
 
 export const statsApi = {
   getStats: async (): Promise<Stats> => {

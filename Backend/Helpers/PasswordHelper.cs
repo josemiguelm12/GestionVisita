@@ -4,13 +4,13 @@ using System.Text;
 namespace GestionVisitaAPI.Helpers;
 
 /// <summary>
-/// Helper para hash y validación de contraseñas
+/// Helper para hash y validaciï¿½n de contraseï¿½as
 /// Utiliza PBKDF2 para hash seguro
 /// </summary>
 public static class PasswordHelper
 {
     /// <summary>
-    /// Genera un hash de contraseña usando PBKDF2 + Salt
+    /// Genera un hash de contraseï¿½a usando PBKDF2 + Salt
     /// </summary>
     public static string HashPassword(string password)
     {
@@ -35,7 +35,7 @@ public static class PasswordHelper
     }
 
     /// <summary>
-    /// Verifica si una contraseña coincide con su hash
+    /// Verifica si una contraseï¿½a coincide con su hash
     /// </summary>
     public static bool VerifyPassword(string password, string storedHash)
     {
@@ -47,7 +47,7 @@ public static class PasswordHelper
             byte[] salt = new byte[32];
             Array.Copy(hashBytes, 0, salt, 0, 32);
 
-            // Generar hash de la contraseña proporcionada
+            // Generar hash de la contraseï¿½a proporcionada
             byte[] hash = Rfc2898DeriveBytes.Pbkdf2(
                 Encoding.UTF8.GetBytes(password),
                 salt,
@@ -74,7 +74,7 @@ public static class PasswordHelper
     }
 
     /// <summary>
-    /// Genera una contraseña aleatoria segura
+    /// Genera una contraseï¿½a aleatoria segura
     /// </summary>
     public static string GenerateRandomPassword(int length = 16)
     {

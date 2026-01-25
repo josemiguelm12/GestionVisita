@@ -6,7 +6,7 @@ using GestionVisitaAPI.DTOs.Auth;
 namespace GestionVisitaAPI.Services;
 
 /// <summary>
-/// Servicio de autenticación con JWT
+/// Servicio de autenticaciï¿½n con JWT
 /// Mapea AuthController de Laravel
 /// </summary>
 public class AuthService
@@ -29,7 +29,7 @@ public class AuthService
     }
 
     /// <summary>
-    /// Login con email y contraseña
+    /// Login con email y contraseï¿½a
     /// </summary>
     public async Task<(bool Success, LoginResponseDto? Response, string? Error)> LoginAsync(
         LoginRequestDto request, 
@@ -48,21 +48,42 @@ public class AuthService
                 // Log de seguridad
                 await LogSecurityEvent("login_failed", null, "invalid_credentials", ipAddress, userAgent);
                 
-                return (false, null, "Credenciales inválidas");
+                return (false, null, "Credenciales invï¿½lidas");
             }
 
-            // 2. Verificar contraseña
-            if (string.IsNullOrEmpty(user.Password) || 
-                !PasswordHelper.VerifyPassword(request.Password, user.Password))
+            _logger.LogInformation("[DEBUG] Usuario encontrado - ID: {UserId}, IsActive: {IsActive}, HasPassword: {HasPassword}", 
+                user.Id, user.IsActive, !string.IsNullOrEmpty(user.Password));
+            
+            if (!string.IsNullOrEmpty(user.Password))
             {
-                _logger.LogWarning("Failed login attempt for user: {Email}", request.Email);
+                _logger.LogInformation("[DEBUG] Hash almacenado (primeros 50 chars): {Hash}", 
+                    user.Password.Length > 50 ? user.Password.Substring(0, 50) : user.Password);
+                _logger.LogInformation("[DEBUG] Longitud del hash: {Length} bytes", user.Password.Length);
+            }
+
+            // 2. Verificar contraseï¿½a
+            _logger.LogInformation("[DEBUG] Verificando contraseÃ±a...");
+            
+            if (string.IsNullOrEmpty(user.Password))
+            {
+                _logger.LogWarning("[DEBUG] Usuario sin contraseÃ±a: {Email}", request.Email);
+                await LogSecurityEvent("login_failed", user.Id, "no_password", ipAddress, userAgent);
+                return (false, null, "Credenciales invï¿½lidas");
+            }
+            
+            bool passwordValid = PasswordHelper.VerifyPassword(request.Password, user.Password);
+            _logger.LogInformation("[DEBUG] Resultado de verificaciÃ³n: {Valid}", passwordValid);
+            
+            if (!passwordValid)
+            {
+                _logger.LogWarning("[DEBUG] ContraseÃ±a incorrecta para: {Email}", request.Email);
                 
                 await LogSecurityEvent("login_failed", user.Id, "invalid_password", ipAddress, userAgent);
                 
-                return (false, null, "Credenciales inválidas");
+                return (false, null, "Credenciales invï¿½lidas");
             }
 
-            // 3. Verificar si el usuario está activo
+            // 3. Verificar si el usuario estï¿½ activo
             if (!user.IsActive)
             {
                 _logger.LogWarning("Login attempt by inactive user: {Email}", request.Email);
@@ -88,7 +109,7 @@ public class AuthService
             // 5. Generar token JWT
             var token = _jwtHelper.GenerateToken(user!);
 
-            // 6. Actualizar última fecha de login
+            // 6. Actualizar ï¿½ltima fecha de login
             user.LastLoginAt = DateTime.UtcNow;
             await _userRepository.UpdateAsync(user);
 
@@ -120,7 +141,7 @@ public class AuthService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during login for {Email}", request.Email);
-            return (false, null, "Error en el proceso de autenticación");
+            return (false, null, "Error en el proceso de autenticaciï¿½n");
         }
     }
 
@@ -153,7 +174,7 @@ public class AuthService
     }
 
     /// <summary>
-    /// Obtener información del usuario autenticado
+    /// Obtener informaciï¿½n del usuario autenticado
     /// </summary>
     public async Task<UserDto?> GetAuthenticatedUserAsync(int userId)
     {
@@ -206,7 +227,7 @@ public class AuthService
     }
 
     /// <summary>
-    /// Obtener permisos del usuario según su rol
+    /// Obtener permisos del usuario segï¿½n su rol
     /// Mapea getUserPermissions de MicrosoftAuthController Laravel
     /// </summary>
     private List<string> GetUserPermissions(string? roleName)
@@ -306,10 +327,10 @@ public class AuthService
             var existingUser = await _userRepository.GetByEmailAsync(request.Email);
             if (existingUser != null)
             {
-                return (false, null, "El email ya está registrado");
+                return (false, null, "El email ya estï¿½ registrado");
             }
 
-            // 2. Hash de la contraseña
+            // 2. Hash de la contraseï¿½a
             var hashedPassword = PasswordHelper.HashPassword(request.Password);
 
             // 3. Crear el usuario

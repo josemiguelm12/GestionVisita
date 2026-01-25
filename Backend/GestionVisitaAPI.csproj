@@ -8,12 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Excluir scripts de utilidad de la compilación -->
+    <Compile Remove="Scripts\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- OpenAPI/Swagger -->
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     
-    <!-- Entity Framework Core para SQL Server -->
+    <!-- Entity Framework Core para PostgreSQL -->
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -46,7 +51,7 @@
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-    <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="7.0.3" />
+    <PackageReference Include="Serilog.Sinks.PostgreSQL" Version="2.3.0" />
     
     <!-- Caché distribuido (Redis para Azure) -->
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.2" />

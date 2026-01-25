@@ -5,14 +5,14 @@ using GestionVisitaAPI.Enums;
 namespace GestionVisitaAPI.Models;
 
 /// <summary>
-/// Entidad AuditLog - Registro de auditoría del sistema
+/// Entidad AuditLog - Registro de auditorï¿½a del sistema
 /// Mapea la tabla 'audit_logs' de Laravel
-/// Registra todas las acciones críticas del sistema para compliance y seguridad
+/// Registra todas las acciones crï¿½ticas del sistema para compliance y seguridad
 /// </summary>
 [Table("audit_logs")]
 public class AuditLog : BaseEntity
 {
-    // FK: Usuario que realizó la acción (nullable para acciones anónimas)
+    // FK: Usuario que realizï¿½ la acciï¿½n (nullable para acciones anï¿½nimas)
     public int? UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
@@ -31,19 +31,17 @@ public class AuditLog : BaseEntity
     /// <summary>
     /// Valores anteriores antes del cambio (JSON)
     /// </summary>
-    [Column(TypeName = "nvarchar(max)")]
     public string? OldValues { get; set; }
 
     /// <summary>
-    /// Valores nuevos después del cambio (JSON)
+    /// Valores nuevos despuï¿½s del cambio (JSON)
     /// </summary>
-    [Column(TypeName = "nvarchar(max)")]
+
     public string? NewValues { get; set; }
 
     [MaxLength(45)]
     public string? IpAddress { get; set; }
 
-    [Column(TypeName = "nvarchar(max)")]
     public string? UserAgent { get; set; }
 
     [MaxLength(255)]
@@ -52,7 +50,6 @@ public class AuditLog : BaseEntity
     [MaxLength(10)]
     public string? RequestMethod { get; set; }
 
-    [Column(TypeName = "nvarchar(max)")]
     public string? RequestUrl { get; set; }
 
     public int? StatusCode { get; set; }
@@ -62,22 +59,21 @@ public class AuditLog : BaseEntity
     /// <summary>
     /// Metadata adicional (JSON)
     /// </summary>
-    [Column(TypeName = "nvarchar(max)")]
     public string? Metadata { get; set; }
 
     [Required]
     public AuditSeverity Severity { get; set; } = AuditSeverity.Low;
 
     /// <summary>
-    /// Tags para categorización (JSON array)
+    /// Tags para categorizaciï¿½n (JSON array)
     /// </summary>
-    [Column(TypeName = "nvarchar(max)")]
+
     public string? Tags { get; set; }
 
     #region Computed Properties
 
     /// <summary>
-    /// Descripción legible de la acción
+    /// Descripciï¿½n legible de la acciï¿½n
     /// </summary>
     [NotMapped]
     public string ActionDescription
@@ -90,13 +86,13 @@ public class AuditLog : BaseEntity
                 "update" => "Actualizar",
                 "delete" => "Eliminar",
                 "view" => "Ver",
-                "login" => "Iniciar sesión",
-                "logout" => "Cerrar sesión",
+                "login" => "Iniciar sesiï¿½n",
+                "logout" => "Cerrar sesiï¿½n",
                 "export" => "Exportar",
                 "import" => "Importar",
                 "close_visit" => "Cerrar visita",
                 "assign_carnet" => "Asignar carnet",
-                "send_notification" => "Enviar notificación",
+                "send_notification" => "Enviar notificaciï¿½n",
                 _ => Action
             };
         }

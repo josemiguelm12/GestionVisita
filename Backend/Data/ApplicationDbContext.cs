@@ -5,7 +5,7 @@ using System.Text.Json;
 namespace GestionVisitaAPI.Data;
 
 /// <summary>
-/// Contexto de base de datos para el sistema de gestión de visitas
+/// Contexto de base de datos para el sistema de gestiï¿½n de visitas
 /// Configura todas las entidades y sus relaciones
 /// </summary>
 public class ApplicationDbContext : DbContext
@@ -58,7 +58,7 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(u => u.Email).IsUnique();
             entity.HasIndex(u => u.MicrosoftId);
 
-            // Relación muchos a muchos con Role
+            // Relaciï¿½n muchos a muchos con Role
             entity.HasMany(u => u.Roles)
                 .WithMany(r => r.Users)
                 .UsingEntity<Dictionary<string, object>>(
@@ -67,25 +67,25 @@ public class ApplicationDbContext : DbContext
                     j => j.HasOne<User>().WithMany().HasForeignKey("user_id")
                 );
 
-            // Auto-referencia: Usuario que creó este usuario
+            // Auto-referencia: Usuario que creï¿½ este usuario
             entity.HasOne(u => u.Creator)
                 .WithMany(u => u.CreatedUsers)
                 .HasForeignKey(u => u.CreatedBy)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relación con visitas creadas
+            // Relaciï¿½n con visitas creadas
             entity.HasMany(u => u.CreatedVisits)
                 .WithOne(v => v.Creator)
                 .HasForeignKey(v => v.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relación con visitas cerradas
+            // Relaciï¿½n con visitas cerradas
             entity.HasMany(u => u.ClosedVisits)
                 .WithOne(v => v.Closer)
                 .HasForeignKey(v => v.ClosedBy)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relación con visitantes creados
+            // Relaciï¿½n con visitantes creados
             entity.HasMany(u => u.CreatedVisitors)
                 .WithOne(v => v.Creator)
                 .HasForeignKey(v => v.UserId)
@@ -119,10 +119,10 @@ public class ApplicationDbContext : DbContext
             entity.Property(v => v.Email).HasMaxLength(255);
             entity.Property(v => v.Institution).HasMaxLength(255);
 
-            // Index único condicional: solo para documentos no nulos
+            // Index ï¿½nico condicional: solo para documentos no nulos
             entity.HasIndex(v => v.IdentityDocument)
                 .IsUnique()
-                .HasFilter("[IdentityDocument] IS NOT NULL");
+                .HasFilter("\"IdentityDocument\" IS NOT NULL");
 
             entity.HasIndex(v => v.Email);
         });
@@ -150,7 +150,7 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(v => v.VehiclePlate);
             entity.HasIndex(v => v.Department);
 
-            // Relación con VisitStatusEntity
+            // Relaciï¿½n con VisitStatusEntity
             entity.HasOne(v => v.Status)
                 .WithMany(vs => vs.Visits)
                 .HasForeignKey(v => v.StatusId)
@@ -168,13 +168,13 @@ public class ApplicationDbContext : DbContext
 
             entity.HasIndex(vv => vv.CaseId);
 
-            // Relación con Visit
+            // Relaciï¿½n con Visit
             entity.HasOne(vv => vv.Visit)
                 .WithMany(v => v.VisitVisitors)
                 .HasForeignKey(vv => vv.VisitId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Relación con Visitor
+            // Relaciï¿½n con Visitor
             entity.HasOne(vv => vv.Visitor)
                 .WithMany(v => v.VisitVisitors)
                 .HasForeignKey(vv => vv.VisitorId)
@@ -201,7 +201,7 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(al => al.CreatedAt);
             entity.HasIndex(al => al.Severity);
 
-            // Relación con User
+            // Relaciï¿½n con User
             entity.HasOne(al => al.User)
                 .WithMany(u => u.AuditLogs)
                 .HasForeignKey(al => al.UserId)
@@ -242,7 +242,7 @@ public class ApplicationDbContext : DbContext
     }
 
     /// <summary>
-    /// Actualiza automáticamente los timestamps de CreatedAt y UpdatedAt
+    /// Actualiza automï¿½ticamente los timestamps de CreatedAt y UpdatedAt
     /// </summary>
     private void UpdateTimestamps()
     {

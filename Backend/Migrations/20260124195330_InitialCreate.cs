@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -17,12 +18,12 @@ namespace GestionVisitaAPI.Migrations
                 name: "roles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -33,18 +34,18 @@ namespace GestionVisitaAPI.Migrations
                 name: "users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    MicrosoftId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    EmailVerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastLoginAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<int>(type: "int", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Password = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    MicrosoftId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    EmailVerifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastLoginAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<int>(type: "integer", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -61,11 +62,11 @@ namespace GestionVisitaAPI.Migrations
                 name: "visit_statuses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -76,26 +77,26 @@ namespace GestionVisitaAPI.Migrations
                 name: "audit_logs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: true),
-                    Action = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    ResourceType = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    ResourceId = table.Column<int>(type: "int", nullable: true),
-                    OldValues = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NewValues = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IpAddress = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: true),
-                    UserAgent = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SessionId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    RequestMethod = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
-                    RequestUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    StatusCode = table.Column<int>(type: "int", nullable: true),
-                    DurationMs = table.Column<int>(type: "int", nullable: true),
-                    Metadata = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Severity = table.Column<int>(type: "int", nullable: false),
-                    Tags = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: true),
+                    Action = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    ResourceType = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    ResourceId = table.Column<int>(type: "integer", nullable: true),
+                    OldValues = table.Column<string>(type: "text", nullable: true),
+                    NewValues = table.Column<string>(type: "text", nullable: true),
+                    IpAddress = table.Column<string>(type: "character varying(45)", maxLength: 45, nullable: true),
+                    UserAgent = table.Column<string>(type: "text", nullable: true),
+                    SessionId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    RequestMethod = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    RequestUrl = table.Column<string>(type: "text", nullable: true),
+                    StatusCode = table.Column<int>(type: "integer", nullable: true),
+                    DurationMs = table.Column<int>(type: "integer", nullable: true),
+                    Metadata = table.Column<string>(type: "text", nullable: true),
+                    Severity = table.Column<int>(type: "integer", nullable: false),
+                    Tags = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -112,8 +113,8 @@ namespace GestionVisitaAPI.Migrations
                 name: "role_user",
                 columns: table => new
                 {
-                    role_id = table.Column<int>(type: "int", nullable: false),
-                    user_id = table.Column<int>(type: "int", nullable: false)
+                    role_id = table.Column<int>(type: "integer", nullable: false),
+                    user_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -136,18 +137,18 @@ namespace GestionVisitaAPI.Migrations
                 name: "visitors",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IdentityDocument = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    DocumentType = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Institution = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdentityDocument = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    DocumentType = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    LastName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Phone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    Email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    Institution = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    UserId = table.Column<int>(type: "integer", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -164,24 +165,24 @@ namespace GestionVisitaAPI.Migrations
                 name: "visits",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    ClosedBy = table.Column<int>(type: "int", nullable: true),
-                    NamePersonToVisit = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Department = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Building = table.Column<int>(type: "int", nullable: true),
-                    Floor = table.Column<int>(type: "int", nullable: true),
-                    Reason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    StatusId = table.Column<int>(type: "int", nullable: false),
-                    EndAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    AssignedCarnet = table.Column<int>(type: "int", nullable: true),
-                    MissionCase = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    VehiclePlate = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    PersonToVisitEmail = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    SendEmail = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    ClosedBy = table.Column<int>(type: "integer", nullable: true),
+                    NamePersonToVisit = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Department = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Building = table.Column<int>(type: "integer", nullable: true),
+                    Floor = table.Column<int>(type: "integer", nullable: true),
+                    Reason = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    StatusId = table.Column<int>(type: "integer", nullable: false),
+                    EndAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    AssignedCarnet = table.Column<int>(type: "integer", nullable: true),
+                    MissionCase = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    VehiclePlate = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    PersonToVisitEmail = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    SendEmail = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -210,11 +211,11 @@ namespace GestionVisitaAPI.Migrations
                 name: "visit_visitor",
                 columns: table => new
                 {
-                    VisitId = table.Column<int>(type: "int", nullable: false),
-                    VisitorId = table.Column<int>(type: "int", nullable: false),
-                    CaseId = table.Column<int>(type: "int", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    VisitId = table.Column<int>(type: "integer", nullable: false),
+                    VisitorId = table.Column<int>(type: "integer", nullable: false),
+                    CaseId = table.Column<int>(type: "integer", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -237,8 +238,8 @@ namespace GestionVisitaAPI.Migrations
                 name: "VisitVisitor",
                 columns: table => new
                 {
-                    VisitorsId = table.Column<int>(type: "int", nullable: false),
-                    VisitsId = table.Column<int>(type: "int", nullable: false)
+                    VisitorsId = table.Column<int>(type: "integer", nullable: false),
+                    VisitsId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -355,7 +356,7 @@ namespace GestionVisitaAPI.Migrations
                 table: "visitors",
                 column: "IdentityDocument",
                 unique: true,
-                filter: "[IdentityDocument] IS NOT NULL");
+                filter: "\"IdentityDocument\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_visitors_UserId",

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 namespace GestionVisitaAPI.Data;
 
 /// <summary>
-/// Factory para crear el DbContext en tiempo de diseño (migraciones)
+/// Factory para crear el DbContext en tiempo de diseï¿½o (migraciones)
 /// </summary>
 public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
 {
@@ -20,7 +20,7 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-        optionsBuilder.UseSqlServer(connectionString);
+        optionsBuilder.UseNpgsql(connectionString);
 
         return new ApplicationDbContext(optionsBuilder.Options);
     }

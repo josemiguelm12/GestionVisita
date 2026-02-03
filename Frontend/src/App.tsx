@@ -3,10 +3,12 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import Layout from './components/layout/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Visitors from './pages/Visitors';
 import Visits from './pages/Visits';
+import Reports from './pages/Reports';
 import NotFound from './pages/NotFound';
 
 const App: React.FC = () => {
@@ -19,19 +21,33 @@ const App: React.FC = () => {
           
           <Route path="/dashboard" element={
             <ProtectedRoute>
-              <Dashboard />
+              <Layout>
+                <Dashboard />
+              </Layout>
             </ProtectedRoute>
           } />
           
           <Route path="/visitors" element={
             <ProtectedRoute>
-              <Visitors />
+              <Layout>
+                <Visitors />
+              </Layout>
             </ProtectedRoute>
           } />
           
           <Route path="/visits" element={
             <ProtectedRoute>
-              <Visits />
+              <Layout>
+                <Visits />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/reports" element={
+            <ProtectedRoute>
+              <Layout>
+                <Reports />
+              </Layout>
             </ProtectedRoute>
           } />
           

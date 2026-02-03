@@ -7,7 +7,7 @@ using GestionVisitaAPI.Enums;
 namespace GestionVisitaAPI.Repositories.Implementations;
 
 /// <summary>
-/// Implementación del repositorio de visitas
+/// Implementaciï¿½n del repositorio de visitas
 /// Mapea VisitRepository de Laravel
 /// </summary>
 public class VisitRepository : Repository<Visit>, IVisitRepository

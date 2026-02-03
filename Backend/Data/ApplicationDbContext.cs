@@ -155,31 +155,31 @@ public class ApplicationDbContext : DbContext
                 .WithMany(vs => vs.Visits)
                 .HasForeignKey(v => v.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Configuraci�n many-to-many con Visitor
+            entity.HasMany(v => v.Visitors)
+                .WithMany(vis => vis.Visits)
+                .UsingEntity<VisitVisitor>(
+                    j => j.HasOne(vv => vv.Visitor)
+                          .WithMany(vis => vis.VisitVisitors)
+                          .HasForeignKey(vv => vv.VisitorId)
+                          .OnDelete(DeleteBehavior.Cascade),
+                    j => j.HasOne(vv => vv.Visit)
+                          .WithMany(v => v.VisitVisitors)
+                          .HasForeignKey(vv => vv.VisitId)
+                          .OnDelete(DeleteBehavior.Cascade),
+                    j =>
+                    {
+                        j.HasKey(vv => new { vv.VisitId, vv.VisitorId });
+                        j.HasIndex(vv => vv.CaseId);
+                    });
         });
 
         #endregion
 
         #region VisitVisitor Configuration (Tabla Pivot)
-
-        modelBuilder.Entity<VisitVisitor>(entity =>
-        {
-            // Clave compuesta
-            entity.HasKey(vv => new { vv.VisitId, vv.VisitorId });
-
-            entity.HasIndex(vv => vv.CaseId);
-
-            // Relaci�n con Visit
-            entity.HasOne(vv => vv.Visit)
-                .WithMany(v => v.VisitVisitors)
-                .HasForeignKey(vv => vv.VisitId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // Relaci�n con Visitor
-            entity.HasOne(vv => vv.Visitor)
-                .WithMany(v => v.VisitVisitors)
-                .HasForeignKey(vv => vv.VisitorId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
+        
+        // La configuraci�n de VisitVisitor ya est� incluida en la configuraci�n many-to-many de Visit arriba
 
         #endregion
 

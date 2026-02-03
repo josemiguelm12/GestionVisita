@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GestionVisitaAPI.Services;
 
 /// <summary>
-/// Servicio de lógica de negocio para visitas
+/// Servicio de lï¿½gica de negocio para visitas
 /// Mapea VisitService de Laravel
 /// </summary>
 public class VisitService
@@ -62,19 +62,24 @@ public class VisitService
             // 2. Asociar visitantes (si se proporcionaron)
             if (request.VisitorIds != null && request.VisitorIds.Any())
             {
-                // TODO: Implementar lógica de asociación en tabla pivot visit_visitor
-                // Por ahora solo validamos que existan
                 foreach (var visitorId in request.VisitorIds)
                 {
                     var visitor = await _visitorRepository.GetByIdAsync(visitorId);
                     if (visitor == null)
                     {
                         _logger.LogWarning("Visitor {VisitorId} not found when creating visit", visitorId);
+                        continue;
                     }
+
+                    // Agregar el visitante a la colecciÃ³n de la visita
+                    createdVisit.Visitors.Add(visitor);
                 }
+
+                // Guardar los cambios para crear los registros en visit_visitor
+                await _visitRepository.UpdateAsync(createdVisit);
             }
 
-            // 3. Log de auditoría
+            // 3. Log de auditorï¿½a
             await LogVisitAction("create", createdVisit.Id, createdByUserId, new
             {
                 department = request.Department,
@@ -114,10 +119,10 @@ public class VisitService
                 return (false, null, "Visita no encontrada");
             }
 
-            // 2. Verificar que no esté ya cerrada
+            // 2. Verificar que no estï¿½ ya cerrada
             if (visit.StatusId == (int)Enums.VisitStatus.Cerrado)
             {
-                return (false, null, "La visita ya está cerrada");
+                return (false, null, "La visita ya estï¿½ cerrada");
             }
 
             // 3. Actualizar datos de cierre
@@ -129,7 +134,7 @@ public class VisitService
 
             var updatedVisit = await _visitRepository.UpdateAsync(visit);
 
-            // 4. Log de auditoría
+            // 4. Log de auditorï¿½a
             await LogVisitAction("close", visitId, closedByUserId, new
             {
                 duration_minutes = (visit.EndAt.Value - visit.CreatedAt).TotalMinutes,
@@ -152,7 +157,7 @@ public class VisitService
     }
 
     /// <summary>
-    /// Actualizar placa de vehículo
+    /// Actualizar placa de vehï¿½culo
     /// Mapea updateVehiclePlate de VisitController Laravel
     /// </summary>
     public async Task<(bool Success, Visit? Visit, string? Error)> UpdateVehiclePlateAsync(
@@ -188,7 +193,7 @@ public class VisitService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating vehicle plate for visit {VisitId}", visitId);
-            return (false, null, "Error al actualizar la placa del vehículo");
+            return (false, null, "Error al actualizar la placa del vehï¿½culo");
         }
     }
 
@@ -234,7 +239,7 @@ public class VisitService
     }
 
     /// <summary>
-    /// Obtener estadísticas del dashboard
+    /// Obtener estadï¿½sticas del dashboard
     /// Mapea getDashboardStats de VisitController Laravel
     /// </summary>
     public async Task<DashboardStatsDto> GetDashboardStatsAsync()
@@ -275,7 +280,7 @@ public class VisitService
     }
 
     /// <summary>
-    /// Obtener estadísticas solo de visitas misionales
+    /// Obtener estadï¿½sticas solo de visitas misionales
     /// Mapea getMissionStatsOnly de VisitController Laravel
     /// </summary>
     public async Task<DashboardStatsDto> GetMissionStatsOnlyAsync()
@@ -312,7 +317,7 @@ public class VisitService
     }
 
     /// <summary>
-    /// Registrar acción de visita en audit log
+    /// Registrar acciï¿½n de visita en audit log
     /// </summary>
     private async Task LogVisitAction(string action, int visitId, int? userId, object metadata)
     {

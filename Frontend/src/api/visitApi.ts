@@ -3,8 +3,8 @@ import type { Visit, CreateVisitRequest } from '../types/visit.types';
 
 export const visitApi = {
   getAll: async (): Promise<Visit[]> => {
-    const response = await api.get<Visit[]>('/visit');
-    return response.data;
+    const response = await api.get<{ data: Visit[] }>('/visit');
+    return response.data.data || [];
   },
 
   getById: async (id: number): Promise<Visit> => {

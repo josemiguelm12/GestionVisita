@@ -1,8 +1,10 @@
-export enum DocumentType {
-  Cedula = 1,
-  Pasaporte = 2,
-  SinIdentificacion = 3,
-}
+export const DocumentType = {
+  Cedula: 1,
+  Pasaporte: 2,
+  SinIdentificacion: 3,
+} as const;
+
+export type DocumentType = typeof DocumentType[keyof typeof DocumentType];
 
 export interface Visitor {
   id: number;
@@ -26,3 +28,4 @@ export interface CreateVisitorRequest {
   email?: string;
   institution?: string;
 }
+

@@ -207,28 +207,31 @@ app.MapControllers();
 
 #endregion
 
-#region Migración Automática de BD (Solo Development)
+//#region Migración Automática de BD (Solo Development)
 
-if (app.Environment.IsDevelopment())
-{
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//if (app.Environment.IsDevelopment())
+//{
+//    using var scope = app.Services.CreateScope();
+//    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     
-    try
-    {
-        Log.Information("Aplicando migraciones pendientes...");
-        dbContext.Database.Migrate();
-        Log.Information("Migraciones aplicadas exitosamente");
-    }
-    catch (Exception ex)
-    {
-        Log.Error(ex, "Error al aplicar migraciones de base de datos");
-    }
-}
+//    try
+//    {
+//        Log.Information("Aplicando migraciones pendientes...");
+//        dbContext.Database.Migrate();
+//        Log.Information("Migraciones aplicadas exitosamente");
+//    }
+//    catch (Exception ex)
+//    {
+//        Log.Error(ex, "Error al aplicar migraciones de base de datos");
+//    }
+//}
 
-#endregion
+//#endregion
 
 Log.Information("Aplicación iniciada");
+
+app.MapGet("/", () => "API GestionVisitas corriendo OK");
+
 
 app.Run();
 

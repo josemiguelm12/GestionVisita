@@ -9,7 +9,6 @@ namespace GestionVisitaAPI.Controllers;
 
 /// <summary>
 /// Controlador de gestión de visitas
-/// Mapea VisitController de Laravel
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
@@ -35,70 +34,125 @@ public class VisitController : ControllerBase
     /// GET /api/visit?page=1&per_page=15&search=...
     /// </summary>
     [HttpGet]
-    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetVisits(
-        [FromQuery] int page = 1,
-        [FromQuery] int per_page = 15,
-        [FromQuery] string? search = null,
-        [FromQuery] int? status_id = null,
-        [FromQuery] string? department = null,
-        [FromQuery] DateTime? date_from = null,
-        [FromQuery] DateTime? date_to = null,
-        [FromQuery] bool? mission_case = null,
-        [FromQuery] bool? has_vehicle = null)
+    [FromQuery] int page = 1,
+    [FromQuery] int per_page = 15,
+    [FromQuery] string? search = null,
+    [FromQuery] int? status_id = null,
+    [FromQuery] string? department = null,
+    [FromQuery] DateTime? date_from = null,
+    [FromQuery] DateTime? date_to = null,
+    [FromQuery] bool? mission_case = null,
+    [FromQuery] bool? has_vehicle = null)
     {
-        try
+        var filters = new Dictionary<string, object>();
+
+        if (!string.IsNullOrWhiteSpace(search)) filters["search"] = search;
+        if (status_id.HasValue) filters["status_id"] = status_id.Value;
+        if (!string.IsNullOrWhiteSpace(department)) filters["department"] = department;
+        if (date_from.HasValue) filters["date_from"] = date_from.Value;
+        if (date_to.HasValue) filters["date_to"] = date_to.Value;
+        if (mission_case.HasValue) filters["mission_case"] = mission_case.Value;
+        if (has_vehicle.HasValue) filters["has_vehicle"] = has_vehicle.Value;
+
+        var result = await _visitRepository.GetVisitsPaginatedAsync(filters, page, per_page);
+
+        var visitsDto = result.Data.Select(v => new VisitResponseDto
         {
-            var filters = new Dictionary<string, object>();
-            
-            if (!string.IsNullOrWhiteSpace(search)) filters["search"] = search;
-            if (status_id.HasValue) filters["status_id"] = status_id.Value;
-            if (!string.IsNullOrWhiteSpace(department)) filters["department"] = department;
-            if (date_from.HasValue) filters["date_from"] = date_from.Value;
-            if (date_to.HasValue) filters["date_to"] = date_to.Value;
-            if (mission_case.HasValue) filters["mission_case"] = mission_case.Value;
-            if (has_vehicle.HasValue) filters["has_vehicle"] = has_vehicle.Value;
-
-            var result = await _visitRepository.GetVisitsPaginatedAsync(filters, page, per_page);
-
-            return Ok(new
+            Id = v.Id,
+            NamePersonToVisit = v.NamePersonToVisit,
+            Department = v.Department,
+            Building = v.Building,
+            Floor = v.Floor,
+            Reason = v.Reason,
+            StatusId = v.StatusId,
+            StatusName = v.Status?.Name,
+            MissionCase = v.MissionCase,
+            VehiclePlate = v.VehiclePlate,
+            PersonToVisitEmail = v.PersonToVisitEmail,
+            AssignedCarnet = v.AssignedCarnet,
+            CreatedAt = v.CreatedAt,
+            EndAt = v.EndAt,
+            Duration = v.Duration != null
+            ? v.Duration.Value.ToString(@"hh\:mm\:ss")
+            : null,
+            IsActive = v.IsActive,
+            CreatorName = v.Creator?.Name,
+            CloserName = v.Closer?.Name,
+            Visitors = v.Visitors.Select(vis => new VisitorSummaryDto
             {
-                data = result.Data,
-                pagination = new
-                {
-                    total = result.Total,
-                    per_page,
-                    current_page = page,
-                    last_page = (int)Math.Ceiling(result.Total / (double)per_page)
-                }
-            });
-        }
-        catch (Exception ex)
+                Id = vis.Id,
+                Name = vis.Name,
+                LastName = vis.LastName,
+                FullName = vis.FullName,
+                IdentityDocument = vis.IdentityDocument
+            }).ToList()
+        }).ToList();
+
+        return Ok(new
         {
-            _logger.LogError(ex, "Error getting visits");
-            return StatusCode(500, new { error = "Error al obtener visitas" });
-        }
+            data = visitsDto,
+            pagination = new
+            {
+                total = result.Total,
+                per_page,
+                current_page = page,
+                last_page = (int)Math.Ceiling(result.Total / (double)per_page)
+            }
+        });
     }
 
-    /// <summary>
+
     /// Obtener visita por ID
     /// GET /api/visit/{id}
-    /// </summary>
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(VisitResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetVisit(int id)
     {
         try
         {
             var visit = await _visitRepository.GetVisitWithDetailsAsync(id);
-            
+
             if (visit == null)
             {
                 return NotFound(new { error = "Visita no encontrada" });
             }
 
-            return Ok(new { data = visit });
+            var response = new VisitResponseDto
+            {
+                Id = visit.Id,
+                NamePersonToVisit = visit.NamePersonToVisit,
+                Department = visit.Department,
+                Building = visit.Building,
+                Floor = visit.Floor,
+                Reason = visit.Reason,
+                StatusId = visit.StatusId,
+                StatusName = visit.Status?.Name,
+                MissionCase = visit.MissionCase,
+                VehiclePlate = visit.VehiclePlate,
+                PersonToVisitEmail = visit.PersonToVisitEmail,
+                AssignedCarnet = visit.AssignedCarnet,
+                CreatedAt = visit.CreatedAt,
+                EndAt = visit.EndAt,
+                Duration = visit.EndAt.HasValue
+                    ? (visit.EndAt.Value - visit.CreatedAt).ToString(@"hh\:mm")
+                    : null,
+                IsActive = visit.IsActive,
+                CreatorName = visit.Creator?.Name,
+                CloserName = visit.Closer?.Name,
+                Visitors = visit.Visitors.Select(v => new VisitorSummaryDto
+                {
+                    Id = v.Id,
+                    Name = v.Name,
+                    LastName = v.LastName,
+                    FullName = $"{v.Name} {v.LastName}",
+                    IdentityDocument = v.IdentityDocument
+                }).ToList()
+            };
+
+            return Ok(new { data = response });
         }
         catch (Exception ex)
         {
@@ -107,10 +161,10 @@ public class VisitController : ControllerBase
         }
     }
 
-    /// <summary>
+
+
     /// Obtener visitas activas
     /// GET /api/visit/active?q=...
-    /// </summary>
     [HttpGet("active")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetActiveVisits([FromQuery] string? q = null)
@@ -127,10 +181,8 @@ public class VisitController : ControllerBase
         }
     }
 
-    /// <summary>
     /// Obtener visitas activas misionales
     /// GET /api/visit/active/mission
-    /// </summary>
     [HttpGet("active/mission")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetActiveMissionVisits([FromQuery] string? q = null)
@@ -147,10 +199,9 @@ public class VisitController : ControllerBase
         }
     }
 
-    /// <summary>
     /// Obtener visitas activas no misionales
     /// GET /api/visit/active/non-mission
-    /// </summary>
+
     [HttpGet("active/non-mission")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetActiveNonMissionVisits([FromQuery] string? q = null)
@@ -167,10 +218,9 @@ public class VisitController : ControllerBase
         }
     }
 
-    /// <summary>
     /// Obtener visitas cerradas de hoy
     /// GET /api/visit/closed-today
-    /// </summary>
+ 
     [HttpGet("closed-today")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetClosedTodayVisits([FromQuery] string? q = null)
@@ -187,10 +237,9 @@ public class VisitController : ControllerBase
         }
     }
 
-    /// <summary>
+    
     /// Obtener visitas de hoy
     /// GET /api/visit/today
-    /// </summary>
     [HttpGet("today")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTodayVisits([FromQuery] string? q = null)
@@ -207,10 +256,9 @@ public class VisitController : ControllerBase
         }
     }
 
-    /// <summary>
+
     /// Crear nueva visita
     /// POST /api/visit
-    /// </summary>
     [HttpPost]
     [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
@@ -256,10 +304,9 @@ public class VisitController : ControllerBase
         }
     }
 
-    /// <summary>
+
     /// Cerrar visita
     /// POST /api/visit/{id}/close
-    /// </summary>
     [HttpPost("{id}/close")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -293,10 +340,9 @@ public class VisitController : ControllerBase
         }
     }
 
-    /// <summary>
+
     /// Actualizar placa de vehículo
     /// PATCH /api/visit/{id}/vehicle-plate
-    /// </summary>
     [HttpPatch("{id}/vehicle-plate")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateVehiclePlate(int id, [FromBody] UpdateVehiclePlateDto request)
@@ -323,10 +369,8 @@ public class VisitController : ControllerBase
         }
     }
 
-    /// <summary>
     /// Asignar carnet
     /// POST /api/visit/{id}/assign-carnet
-    /// </summary>
     [HttpPost("{id}/assign-carnet")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     public async Task<IActionResult> AssignCarnet(int id, [FromBody] AssignCarnetDto request)
@@ -353,10 +397,9 @@ public class VisitController : ControllerBase
         }
     }
 
-    /// <summary>
+
     /// Eliminar visita (soft delete)
     /// DELETE /api/visit/{id}
-    /// </summary>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -375,10 +418,9 @@ public class VisitController : ControllerBase
         }
     }
 
-    /// <summary>
+
     /// Obtener estadísticas del dashboard
     /// GET /api/visit/stats/dashboard
-    /// </summary>
     [HttpGet("stats/dashboard")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetDashboardStats()
@@ -395,9 +437,8 @@ public class VisitController : ControllerBase
         }
     }
 
-    /// <summary>
+
     /// Helper: Obtener ID del usuario autenticado
-    /// </summary>
     private int? GetCurrentUserId()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);

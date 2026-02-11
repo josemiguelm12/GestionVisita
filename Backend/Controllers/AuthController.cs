@@ -5,10 +5,7 @@ using GestionVisitaAPI.DTOs.Auth;
 
 namespace GestionVisitaAPI.Controllers;
 
-/// <summary>
-/// Controlador de autenticación con JWT
-/// Mapea AuthController de Laravel
-/// </summary>
+/// Controlador de autenticaciï¿½n con JWT
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
@@ -24,10 +21,8 @@ public class AuthController : ControllerBase
         _logger = logger;
     }
 
-    /// <summary>
-    /// Login con email y contraseña
+    /// Login con email y contraseï¿½a
     /// POST /api/auth/login
-    /// </summary>
     [HttpPost("login")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
@@ -39,7 +34,7 @@ public class AuthController : ControllerBase
         {
             return UnprocessableEntity(new
             {
-                error = "Datos de entrada inválidos",
+                error = "Datos de entrada invï¿½lidos",
                 errors = ModelState
             });
         }
@@ -57,10 +52,9 @@ public class AuthController : ControllerBase
         return Ok(result.Response);
     }
 
-    /// <summary>
-    /// Obtener información del usuario autenticado
+
+    /// Obtener informaciï¿½n del usuario autenticado
     /// GET /api/auth/me
-    /// </summary>
     [HttpGet("me")]
     [Authorize]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
@@ -72,7 +66,7 @@ public class AuthController : ControllerBase
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
             if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
             {
-                return Unauthorized(new { error = "Token inválido" });
+                return Unauthorized(new { error = "Token invï¿½lido" });
             }
 
             var user = await _authService.GetAuthenticatedUserAsync(userId);
@@ -87,14 +81,13 @@ public class AuthController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting authenticated user");
-            return StatusCode(500, new { error = "Error al obtener información del usuario" });
+            return StatusCode(500, new { error = "Error al obtener informaciï¿½n del usuario" });
         }
     }
 
-    /// <summary>
-    /// Cerrar sesión
+
+    /// Cerrar sesiï¿½n
     /// POST /api/auth/logout
-    /// </summary>
     [HttpPost("logout")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -111,19 +104,18 @@ public class AuthController : ControllerBase
                 await _authService.LogoutAsync(userId, ipAddress, userAgent);
             }
 
-            return Ok(new { message = "Sesión cerrada exitosamente" });
+            return Ok(new { message = "Sesiï¿½n cerrada exitosamente" });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during logout");
-            return Ok(new { message = "Sesión cerrada" });
+            return Ok(new { message = "Sesiï¿½n cerrada" });
         }
     }
 
-    /// <summary>
+
     /// Verificar validez del token (health check)
     /// GET /api/auth/check
-    /// </summary>
     [HttpGet("check")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -146,13 +138,12 @@ public class AuthController : ControllerBase
         });
     }
 
-    /// <summary>
+
     /// Registro de nuevo usuario
     /// POST /api/auth/register
-    /// ?? TEMPORAL: Solo para testing. En producción debe estar protegido o deshabilitado.
-    /// </summary>
+    /// ?? TEMPORAL: Solo para testing. En producciï¿½n debe estar protegido o deshabilitado.
     [HttpPost("register")]
-    [AllowAnonymous] // ?? CAMBIAR A [Authorize(Roles = "Admin")] en producción
+    [AllowAnonymous] // ?? CAMBIAR A [Authorize(Roles = "Admin")] en producciï¿½n
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
@@ -162,7 +153,7 @@ public class AuthController : ControllerBase
         {
             return UnprocessableEntity(new
             {
-                error = "Datos de entrada inválidos",
+                error = "Datos de entrada invï¿½lidos",
                 errors = ModelState
             });
         }

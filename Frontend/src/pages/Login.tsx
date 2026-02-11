@@ -32,7 +32,7 @@ const Login: React.FC = () => {
         <h2 className="text-4xl font-medium text-gray-900">Iniciar Sesión</h2>
         <p className="mt-3 text-sm text-gray-500/90">Bienvenido de nuevo! Por favor inicia sesión para continuar</p>
         
-        <div className="mt-10 mb-2 w-full">
+        {/* <div className="mt-10 mb-2 w-full">
           <button 
             type="button" 
             className="flex w-full items-center justify-center gap-3 rounded-full border border-gray-200 py-2.5 hover:bg-gray-50 focus:border-gray-300 cursor-pointer transition"
@@ -45,11 +45,11 @@ const Login: React.FC = () => {
             </svg>
             <span className="font-medium text-gray-700">Continuar con Microsoft 365</span>
           </button>
-        </div>
+        </div> */}
         
         <div className="my-5 flex w-full items-center gap-4">
           <div className="h-px w-full bg-gray-300/90"></div>
-          <p className="w-full text-sm text-nowrap text-gray-500/90">o inicia sesión con email</p>
+          <p className="w-full text-sm text-nowrap text-gray-500/90"> inicia sesión con email</p>
           <div className="h-px w-full bg-gray-300/90"></div>
         </div>
         

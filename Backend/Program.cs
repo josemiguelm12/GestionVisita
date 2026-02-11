@@ -230,7 +230,7 @@ app.MapControllers();
 
 Log.Information("Aplicación iniciada");
 
-app.MapGet("/", () => "API GestionVisitas corriendo OK");
+// app.MapGet("/", () => "API GestionVisitas corriendo OK");
 
 
 app.Run();

@@ -15,45 +15,47 @@ const Reports: React.FC = () => {
   const [reportData, setReportData] = useState<Visit[]>([]);
 
   const generateReport = async () => {
-    if (!startDate || !endDate) {
-      toast.error('Debe seleccionar fecha de inicio y fin');
-      return;
+  if (!startDate || !endDate) {
+    toast.error('Debe seleccionar fecha de inicio y fin');
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const response = await visitApi.getAll();
+    const data: Visit[] = response.data;
+
+    const filtered = data.filter((visit: Visit) => {
+      const visitDate = new Date(visit.createdAt);
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      return visitDate >= start && visitDate <= end;
+    });
+
+    let finalData = filtered;
+
+    if (reportType === 'active') {
+      finalData = filtered.filter(
+        (v: Visit) => v.statusName === 'Abierto'
+      );
+    } else if (reportType === 'closed') {
+      finalData = filtered.filter(
+        (v: Visit) => v.statusName === 'Cerrado'
+      );
     }
 
-    setLoading(true);
-    try {
-      const data = await visitApi.getAll();
-      
-      // Filtrar por fechas
-      const filtered = data.filter((visit) => {
-        const visitDate = new Date(visit.createdAt);
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
-        return visitDate >= start && visitDate <= end;
-      });
+    setReportData(finalData);
+    toast.success(`Reporte generado: ${finalData.length} registros`);
 
-      // Filtrar por tipo
-      let finalData = filtered;
-      if (reportType === 'active') {
-        finalData = filtered.filter((v) => 
-          (typeof v.status === 'string' ? v.status : v.status.name) === 'Abierto'
-        );
-      } else if (reportType === 'closed') {
-        finalData = filtered.filter((v) => 
-          (typeof v.status === 'string' ? v.status : v.status.name) === 'Cerrado'
-        );
-      }
-
-      setReportData(finalData);
-      toast.success(`Reporte generado: ${finalData.length} registros`);
-    } catch (error) {
-      toast.error('Error al generar reporte');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (error) {
+    toast.error('Error al generar reporte');
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const exportToCSV = () => {
     if (reportData.length === 0) {
@@ -70,7 +72,7 @@ const Reports: React.FC = () => {
       visit.namePersonToVisit,
       visit.department,
       new Date(visit.createdAt).toLocaleString('es-DO'),
-      typeof visit.status === 'string' ? visit.status : visit.status.name,
+      typeof visit.statusName === 'string' ? visit.statusName : visit.statusName,
       visit.reason || '-'
     ]);
 
@@ -87,19 +89,26 @@ const Reports: React.FC = () => {
     toast.success('Reporte exportado exitosamente');
   };
 
-  const getStatusBadge = (status: { name: string } | string) => {
-    const statusName = typeof status === 'string' ? status : status.name;
-    const colors: Record<string, string> = {
-      'Abierto': 'bg-green-100 text-green-800',
-      'Cerrado': 'bg-gray-100 text-gray-800',
-      'Cancelado': 'bg-red-100 text-red-800',
-    };
-    return (
-      <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[statusName] || 'bg-gray-100 text-gray-800'}`}>
-        {statusName}
-      </span>
-    );
+  const getStatusBadge = (status: string | null) => {
+  const colors: Record<string, string> = {
+    Abierto: 'bg-green-100 text-green-800',
+    Cerrado: 'bg-gray-100 text-gray-800',
+    Cancelado: 'bg-red-100 text-red-800',
   };
+
+  return (
+    <span
+      className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${
+        status && colors[status]
+          ? colors[status]
+          : 'bg-gray-100 text-gray-800'
+      }`}
+    >
+      {status ?? 'Sin estado'}
+    </span>
+  );
+};
+
 
   return (
     <div className="space-y-6">
@@ -210,7 +219,7 @@ const Reports: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-900">
                       {new Date(visit.createdAt).toLocaleString('es-DO')}
                     </td>
-                    <td className="px-4 py-3 text-sm">{getStatusBadge(visit.status)}</td>
+                    <td className="px-4 py-3 text-sm">{getStatusBadge(visit.statusName)}</td>
                     <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">
                       {visit.reason || '-'}
                     </td>

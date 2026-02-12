@@ -26,27 +26,28 @@ const Visits: React.FC = () => {
   }, [visits, filterStatus]);
 
   const loadVisits = async () => {
-    try {
-      setLoading(true);
-      const data = await visitApi.getAll();
-      setVisits(Array.isArray(data) ? data : []);
-    } catch (error) {
-      toast.error('Error al cargar visitas');
-      console.error(error);
-      setVisits([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    const response = await visitApi.getAll();
+    setVisits(response.data);
+  } catch (error) {
+    toast.error('Error al cargar visitas');
+    console.error(error);
+    setVisits([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const applyFilters = () => {
     let filtered = [...visits];
 
     if (filterStatus === 'active') {
-      filtered = filtered.filter((v) => (typeof v.status === 'string' ? v.status : v.status.name) === 'Abierto');
-    } else if (filterStatus === 'closed') {
-      filtered = filtered.filter((v) => (typeof v.status === 'string' ? v.status : v.status.name) === 'Cerrado');
-    }
+  filtered = filtered.filter((v) => v.statusName === 'Abierto');
+} else if (filterStatus === 'closed') {
+  filtered = filtered.filter((v) => v.statusName === 'Cerrado');
+}
 
     setFilteredVisits(filtered);
   };
@@ -110,8 +111,8 @@ const Visits: React.FC = () => {
     );
   }
 
-  const activeCount = (visits || []).filter((v) => (typeof v.status === 'string' ? v.status : v.status.name) === 'Abierto').length;
-  const closedCount = (visits || []).filter((v) => (typeof v.status === 'string' ? v.status : v.status.name) === 'Cerrado').length;
+const activeCount = visits.filter((v) => v.statusName === 'Abierto').length;
+const closedCount = visits.filter((v) => v.statusName === 'Cerrado').length;
 
   return (
     <div className="space-y-6">

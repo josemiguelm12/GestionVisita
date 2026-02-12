@@ -1,11 +1,11 @@
 import api from './axiosConfig';
-import type { Visit, CreateVisitRequest } from '../types/visit.types';
+import type { Visit, CreateVisitRequest, VisitsApiResponse } from '../types/visit.types';
 
 export const visitApi = {
-  getAll: async (): Promise<Visit[]> => {
-    const response = await api.get<{ data: Visit[] }>('/visit');
-    return response.data.data || [];
-  },
+  getAll: async (): Promise<VisitsApiResponse> => {
+  const response = await api.get<VisitsApiResponse>('/visit');
+  return response.data;
+},
 
   getById: async (id: number): Promise<Visit> => {
     const response = await api.get<{ data: Visit }>(`/visit/${id}`);

@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+    /* Configuración para Node.js con TypeScript moderno */
+    "target": "ES2022",                          // JavaScript moderno
+    "module": "commonjs",                        // Sistema de módulos de Node.js
+    "lib": ["ES2022"],                          // APIs disponibles
+    "outDir": "./dist",                          // Carpeta de salida JS compilado
+    "rootDir": "./src",                          // Carpeta raíz del código fuente
+    
+    /* Strict Type Checking */
+    "strict": true,                              // Activa todas las comprobaciones estrictas
+    "noImplicitAny": true,                       // Error si hay 'any' implícito
+    "strictNullChecks": true,                    // null y undefined son tipos separados
+    "strictFunctionTypes": true,                 // Verificación estricta de funciones
+    "strictBindCallApply": true,                 // Verificación de bind/call/apply
+    "noUnusedLocals": true,                      // Error si hay variables sin usar
+    "noUnusedParameters": true,                  // Error si hay parámetros sin usar
+    "noImplicitReturns": true,                   // Todas las rutas deben retornar valores
+    
+    /* Module Resolution */
+    "moduleResolution": "node",                  // Resolución estilo Node.js
+    "esModuleInterop": true,                     // Compatibilidad con CommonJS/ES Modules
+    "allowSyntheticDefaultImports": true,        // Permite importar módulos sin export default
+    "resolveJsonModule": true,                   // Permite importar archivos .json
+    "skipLibCheck": true,                        // Omite verificación de tipos en .d.ts
+    "forceConsistentCasingInFileNames": true,    // Nombres de archivos case-sensitive
+    
+    /* Emit */
+    "declaration": true,                         // Genera archivos .d.ts
+    "sourceMap": true,                           // Genera source maps para debugging
+    "removeComments": true,                      // Elimina comentarios del JS compilado
+    
+    /* Base URL para imports absolutos */
+    "baseUrl": "./src",
+    "paths": {
+      "@config/*": ["config/*"],
+      "@types/*": ["types/*"],
+      "@services/*": ["services/*"],
+      "@generators/*": ["generators/*"],
+      "@simulation/*": ["simulation/*"]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "gestionvisita-simulador",
+  "version": "1.0.0",
+  "description": "Simulador de tráfico realista para GestionVisita API - Genera datos históricos para dashboards y reportes",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "clean": "rmdir /s /q dist 2>nul || true"
+  },
+  "keywords": [
+    "simulator",
+    "azure",
+    "webjob",
+    "traffic-generator"
+  ],
+  "author": "GestionVisita Team",
+  "license": "MIT",
+  "dependencies": {
+    "@faker-js/faker": "^8.4.0",
+    "axios": "^1.6.5",
+    "dayjs": "^1.11.10",
+    "dotenv": "^16.6.1",
+    "pino": "^10.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

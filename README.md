@@ -107,8 +107,93 @@ GestionVisita/
 │   │   └── types/            # TypeScript types
 │   └── public/
 │
+├── Simulador/                # 🤖 Bot de simulación de tráfico
+│   ├── src/
+│   │   ├── config/           # Configuración
+│   │   ├── types/            # TypeScript definitions
+│   │   ├── services/         # HTTP Client + Logger
+│   │   ├── generators/       # Generadores de datos
+│   │   └── simulation/       # Motor de simulación
+│   ├── build-webjob.ps1      # Script de build
+│   ├── DEPLOYMENT.md         # Guía Azure WebJob
+│   └── README.md
+│
 └── README.md
 ```
+
+---
+
+## 🤖 Simulador de Tráfico
+
+El proyecto incluye un **simulador de tráfico realista** para generar datos históricos:
+
+### ¿Qué hace?
+
+Simula el comportamiento de una recepción empresarial real:
+- ✅ Llegadas de visitantes durante horario laboral (8 AM - 6 PM)
+- ✅ Grupos de 1-4 personas
+- ✅ Datos dominicanos realistas (nombres, cédulas, placas)
+- ✅ Patrones de carga variable (picos en mañana, baja a mediodía)
+- ✅ Duración de visitas con distribución normal (5-180 min)
+- ✅ 5% de visitas olvidan cerrarse (comportamiento realista)
+
+### Stack Técnico
+
+- **Node.js 18+** con TypeScript
+- **Axios** para HTTP
+- **Dayjs** para manejo de fechas
+- **Faker.js** para datos realistas
+
+### Uso Rápido
+
+```bash
+cd Simulador
+
+# Desarrollo local
+npm install
+cp .env.example .env
+# Edita .env con tu API local
+npm run dev
+
+# Build para Azure WebJob
+.\build-webjob.ps1
+# Sube webjob.zip a Azure Portal
+```
+
+### Deployment a Azure
+
+El simulador se despliega como **Azure WebJob Continuous** en el mismo App Service del backend:
+
+```
+App Service → WebJobs → Add
+- Name: GestionVisitaSimulator
+- File: webjob.zip
+- Type: Continuous
+- Scale: Single Instance
+```
+
+📚 **Ver guía completa**: [`simulador/DEPLOYMENT.md`](simulador/DEPLOYMENT.md)
+
+### Configuración
+
+Variables de entorno en Azure App Service:
+
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `API_BASE_URL` | URL del backend | `https://tu-api.azurewebsites.net` |
+| `AUTH_EMAIL` | Usuario simulador | `recepcion@example.com` |
+| `AUTH_PASSWORD` | Contraseña | `Password123!` |
+| `SIMULATION_SPEED` | Velocidad (1.0 = real time) | `1.0` |
+| `UNCLOSED_VISIT_PROBABILITY` | % visitas sin cerrar | `0.05` |
+
+### Resultado Esperado
+
+Con velocidad `1.0` (tiempo real):
+- **~50 visitas por día**
+- **~250 visitas por semana**
+- **~1000 visitas por mes**
+
+Suficiente para dashboards y reportes con datos significativos.
 
 ---
 

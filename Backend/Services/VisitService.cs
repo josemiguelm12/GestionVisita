@@ -241,6 +241,7 @@ public class VisitService
     /// <summary>
     /// Obtener estad�sticas del dashboard
     /// Mapea getDashboardStats de VisitController Laravel
+    /// OPTIMIZADO: Usa COUNT directo en SQL en lugar de traer todos los datos
     /// </summary>
     public async Task<DashboardStatsDto> GetDashboardStatsAsync()
     {
@@ -248,27 +249,24 @@ public class VisitService
         {
             var today = DateTime.UtcNow.Date;
             var weekStart = today.AddDays(-(int)today.DayOfWeek);
+            var weekEnd = today.AddDays(1).AddTicks(-1);
 
-            // Visitas de hoy
-            var todayVisits = await _visitRepository.GetTodayVisitsAsync();
-            
-            // Visitas de esta semana
-            var weekVisits = await _visitRepository.GetVisitsByDateRangeAsync(
-                weekStart, 
-                today.AddDays(1).AddTicks(-1));
+            // Ejecutar todas las consultas COUNT en paralelo
+            var todayTask = _visitRepository.CountTodayVisitsAsync(missionOnly: null);
+            var weekTask = _visitRepository.CountVisitsByDateRangeAsync(weekStart, weekEnd, missionOnly: null);
+            var activeTask = _visitRepository.CountActiveVisitsAsync(missionOnly: null);
 
-            // Visitas activas
-            var activeVisits = await _visitRepository.GetActiveVisitsAsync();
+            await Task.WhenAll(todayTask, weekTask, activeTask);
 
             // Calcular promedio diario de la semana
             var daysInWeek = (today - weekStart).Days + 1;
-            var dailyAverage = daysInWeek > 0 ? weekVisits.Count() / daysInWeek : 0;
+            var dailyAverage = daysInWeek > 0 ? weekTask.Result / daysInWeek : 0;
 
             return new DashboardStatsDto
             {
-                TodayVisits = todayVisits.Count(),
-                WeekVisits = weekVisits.Count(),
-                ActiveVisits = activeVisits.Count(),
+                TodayVisits = todayTask.Result,
+                WeekVisits = weekTask.Result,
+                ActiveVisits = activeTask.Result,
                 DailyAverage = dailyAverage
             };
         }
@@ -282,6 +280,7 @@ public class VisitService
     /// <summary>
     /// Obtener estad�sticas solo de visitas misionales
     /// Mapea getMissionStatsOnly de VisitController Laravel
+    /// OPTIMIZADO: Usa COUNT directo en SQL
     /// </summary>
     public async Task<DashboardStatsDto> GetMissionStatsOnlyAsync()
     {
@@ -289,23 +288,23 @@ public class VisitService
         {
             var today = DateTime.UtcNow.Date;
             var weekStart = today.AddDays(-(int)today.DayOfWeek);
+            var weekEnd = today.AddDays(1).AddTicks(-1);
 
-            var todayMissionVisits = (await _visitRepository.GetTodayVisitsAsync())
-                .Where(v => v.MissionCase);
-            
-            var weekMissionVisits = (await _visitRepository.GetVisitsByDateRangeAsync(weekStart, today.AddDays(1).AddTicks(-1)))
-                .Where(v => v.MissionCase);
+            // Ejecutar todas las consultas COUNT en paralelo
+            var todayTask = _visitRepository.CountTodayVisitsAsync(missionOnly: true);
+            var weekTask = _visitRepository.CountVisitsByDateRangeAsync(weekStart, weekEnd, missionOnly: true);
+            var activeTask = _visitRepository.CountActiveVisitsAsync(missionOnly: true);
 
-            var activeMissionVisits = await _visitRepository.GetActiveMissionVisitsAsync();
+            await Task.WhenAll(todayTask, weekTask, activeTask);
 
             var daysInWeek = (today - weekStart).Days + 1;
-            var dailyAverage = daysInWeek > 0 ? weekMissionVisits.Count() / daysInWeek : 0;
+            var dailyAverage = daysInWeek > 0 ? weekTask.Result / daysInWeek : 0;
 
             return new DashboardStatsDto
             {
-                TodayVisits = todayMissionVisits.Count(),
-                WeekVisits = weekMissionVisits.Count(),
-                ActiveVisits = activeMissionVisits.Count(),
+                TodayVisits = todayTask.Result,
+                WeekVisits = weekTask.Result,
+                ActiveVisits = activeTask.Result,
                 DailyAverage = dailyAverage
             };
         }

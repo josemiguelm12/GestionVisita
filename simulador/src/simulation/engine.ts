@@ -33,7 +33,7 @@ import {
   generateGroupSize,
   generateVisitDuration,
 } from '../generators/dataGenerators';
-import { CreateVisitorRequest, DocumentType } from '../types/api.types';
+import { CreateVisitorRequest } from '../types/api.types';
 
 // Configurar dayjs plugins
 dayjs.extend(utc);

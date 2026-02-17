@@ -154,11 +154,11 @@ class ApiClient {
     await this.ensureAuthenticated();
     
     try {
-      const response = await this.axiosInstance.post<VisitorResponse>(
+      const response = await this.axiosInstance.post<{ message: string; data: VisitorResponse }>(
         '/api/visitor',
         data
       );
-      return response.data;
+      return response.data.data;
     } catch (error) {
       this.handleError('createVisitor', error);
       throw error;
@@ -177,11 +177,11 @@ class ApiClient {
     await this.ensureAuthenticated();
     
     try {
-      const response = await this.axiosInstance.post<VisitResponse>(
+      const response = await this.axiosInstance.post<{ message: string; data: VisitResponse }>(
         '/api/visit',
         data
       );
-      return response.data;
+      return response.data.data;
     } catch (error) {
       this.handleError('createVisit', error);
       throw error;
@@ -196,11 +196,11 @@ class ApiClient {
     await this.ensureAuthenticated();
     
     try {
-      const response = await this.axiosInstance.post<VisitResponse>(
+      const response = await this.axiosInstance.post<{ message: string; data: VisitResponse }>(
         `/api/visit/${visitId}/close`,
         data || {}
       );
-      return response.data;
+      return response.data.data;
     } catch (error) {
       this.handleError('closeVisit', error);
       throw error;

@@ -147,6 +147,7 @@ public class VisitRepository : Repository<Visit>, IVisitRepository
     public async Task<IEnumerable<Visit>> GetVisitsByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         return await _dbSet
+            .AsNoTracking() // Sin tracking para mejorar rendimiento en consultas de solo lectura
             .Include(v => v.Creator)
             .Include(v => v.Status)
             .Include(v => v.Visitors)
@@ -281,5 +282,93 @@ public class VisitRepository : Repository<Visit>, IVisitRepository
         }
 
         return query;
+    }
+
+    // ========== MÉTODOS OPTIMIZADOS PARA ESTADÍSTICAS ==========
+    // Estos métodos usan COUNT directo en SQL sin traer datos completos
+
+    public async Task<int> CountTodayVisitsAsync(bool? missionOnly = null)
+    {
+        var today = DateTime.UtcNow.Date;
+        var query = _dbSet
+            .AsNoTracking()
+            .Where(v => v.CreatedAt.Date == today);
+
+        if (missionOnly.HasValue)
+        {
+            query = query.Where(v => v.MissionCase == missionOnly.Value);
+        }
+
+        return await query.CountAsync();
+    }
+
+    public async Task<int> CountVisitsByDateRangeAsync(DateTime startDate, DateTime endDate, bool? missionOnly = null)
+    {
+        var query = _dbSet
+            .AsNoTracking()
+            .Where(v => v.CreatedAt >= startDate && v.CreatedAt <= endDate);
+
+        if (missionOnly.HasValue)
+        {
+            query = query.Where(v => v.MissionCase == missionOnly.Value);
+        }
+
+        return await query.CountAsync();
+    }
+
+    public async Task<int> CountActiveVisitsAsync(bool? missionOnly = null)
+    {
+        var query = _dbSet
+            .AsNoTracking()
+            .Where(v => v.StatusId == (int)Enums.VisitStatus.Abierto);
+
+        if (missionOnly.HasValue)
+        {
+            query = query.Where(v => v.MissionCase == missionOnly.Value);
+        }
+
+        return await query.CountAsync();
+    }
+
+    public async Task<List<(DateTime Date, int Count)>> GetDailyTrendAsync(DateTime startDate, DateTime endDate)
+    {
+        // GROUP BY directo en SQL - mucho más eficiente
+        return await _dbSet
+            .AsNoTracking()
+            .Where(v => v.CreatedAt >= startDate && v.CreatedAt <= endDate)
+            .GroupBy(v => v.CreatedAt.Date)
+            .Select(g => new ValueTuple<DateTime, int>(g.Key, g.Count()))
+            .OrderBy(x => x.Item1)
+            .ToListAsync();
+    }
+
+    public async Task<List<(string Department, int Count)>> GetTopDepartmentsAsync(int limit = 10)
+    {
+        // GROUP BY directo en SQL
+        return await _dbSet
+            .AsNoTracking()
+            .GroupBy(v => v.Department)
+            .Select(g => new ValueTuple<string, int>(g.Key, g.Count()))
+            .OrderByDescending(x => x.Item2)
+            .Take(limit)
+            .ToListAsync();
+    }
+
+    public async Task<List<(string Department, int Count)>> GetTopDepartmentsByDateRangeAsync(DateTime startDate, DateTime endDate, int? limit = null)
+    {
+        // GROUP BY directo en SQL con filtro de fechas
+        var query = _dbSet
+            .AsNoTracking()
+            .Where(v => v.CreatedAt >= startDate && v.CreatedAt <= endDate)
+            .GroupBy(v => v.Department)
+            .Select(g => new ValueTuple<string, int>(g.Key, g.Count()))
+            .OrderByDescending(x => x.Item2);
+
+        if (limit.HasValue)
+        {
+            query = (IOrderedQueryable<(string, int)>)query.Take(limit.Value);
+        }
+
+        return await query.ToListAsync();
     }
 }

@@ -7,7 +7,7 @@ using GestionVisitaAPI.DTOs.Stats;
 namespace GestionVisitaAPI.Controllers;
 
 /// <summary>
-/// Controlador de estadísticas y reportes
+/// Controlador de estadï¿½sticas y reportes
 /// Mapea StatsController de Laravel
 /// </summary>
 [ApiController]
@@ -71,6 +71,7 @@ public class StatsController : ControllerBase
     /// <summary>
     /// Obtener tendencia diaria de visitas
     /// GET /api/stats/daily?days=30
+    /// OPTIMIZADO: GROUP BY directo en SQL
     /// </summary>
     [HttpGet("daily")]
     [ProducesResponseType(typeof(DailyTrendResponseDto), StatusCodes.Status200OK)]
@@ -81,21 +82,12 @@ public class StatsController : ControllerBase
             var endDate = DateTime.UtcNow.Date.AddDays(1).AddTicks(-1);
             var startDate = endDate.AddDays(-days);
 
-            var visits = await _visitRepository.GetVisitsByDateRangeAsync(startDate, endDate);
-
-            var grouped = visits
-                .GroupBy(v => v.CreatedAt.Date)
-                .OrderBy(g => g.Key)
-                .Select(g => new
-                {
-                    Date = g.Key.ToString("yyyy-MM-dd"),
-                    Count = g.Count()
-                })
-                .ToList();
+            // Usar el mï¿½todo optimizado que hace GROUP BY en SQL
+            var grouped = await _visitRepository.GetDailyTrendAsync(startDate, endDate);
 
             var response = new DailyTrendResponseDto
             {
-                Dates = grouped.Select(x => x.Date).ToList(),
+                Dates = grouped.Select(x => x.Date.ToString("yyyy-MM-dd")).ToList(),
                 Visits = grouped.Select(x => x.Count).ToList()
             };
 
@@ -109,8 +101,9 @@ public class StatsController : ControllerBase
     }
 
     /// <summary>
-    /// Obtener estadísticas por departamento
+    /// Obtener estadï¿½sticas por departamento
     /// GET /api/stats/by-department
+    /// OPTIMIZADO: GROUP BY directo en SQL
     /// </summary>
     [HttpGet("by-department")]
     [ProducesResponseType(typeof(List<DepartmentStatsResponseDto>), StatusCodes.Status200OK)]
@@ -121,31 +114,32 @@ public class StatsController : ControllerBase
             var startDate = date_from ?? DateTime.UtcNow.Date.AddMonths(-1);
             var endDate = date_to ?? DateTime.UtcNow.Date.AddDays(1).AddTicks(-1);
 
-            var visits = await _visitRepository.GetVisitsByDateRangeAsync(startDate, endDate);
+            // Usar el mï¿½todo optimizado que hace GROUP BY en SQL
+            var grouped = await _visitRepository.GetTopDepartmentsByDateRangeAsync(startDate, endDate, limit: null);
+            
+            var totalCount = await _visitRepository.CountVisitsByDateRangeAsync(startDate, endDate, missionOnly: null);
 
-            var total = visits.Count();
-            var grouped = visits
-                .GroupBy(v => v.Department)
+            var result = grouped
                 .Select(g => new DepartmentStatsResponseDto
                 {
-                    Department = g.Key,
-                    Visits = g.Count(),
-                    Percentage = total > 0 ? Math.Round((g.Count() / (double)total) * 100, 2) : 0
+                    Department = g.Department,
+                    Visits = g.Count,
+                    Percentage = totalCount > 0 ? Math.Round((g.Count / (double)totalCount) * 100, 2) : 0
                 })
                 .OrderByDescending(x => x.Visits)
                 .ToList();
 
-            return Ok(grouped);
+            return Ok(result);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting stats by department");
-            return StatusCode(500, new { error = "Error al obtener estadísticas por departamento" });
+            return StatusCode(500, new { error = "Error al obtener estadï¿½sticas por departamento" });
         }
     }
 
     /// <summary>
-    /// Obtener estadísticas de duración de visitas
+    /// Obtener estadï¿½sticas de duraciï¿½n de visitas
     /// GET /api/stats/duration
     /// </summary>
     [HttpGet("duration")]
@@ -184,7 +178,7 @@ public class StatsController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting duration stats");
-            return StatusCode(500, new { error = "Error al obtener estadísticas de duración" });
+            return StatusCode(500, new { error = "Error al obtener estadï¿½sticas de duraciï¿½n" });
         }
     }
 
@@ -224,7 +218,7 @@ public class StatsController : ControllerBase
     }
 
     /// <summary>
-    /// Obtener promedio de visitas por día de la semana
+    /// Obtener promedio de visitas por dï¿½a de la semana
     /// GET /api/stats/weekday-average
     /// </summary>
     [HttpGet("weekday-average")]
@@ -254,7 +248,7 @@ public class StatsController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting weekday average");
-            return StatusCode(500, new { error = "Error al obtener promedio por día de la semana" });
+            return StatusCode(500, new { error = "Error al obtener promedio por dï¿½a de la semana" });
         }
     }
 
@@ -309,7 +303,7 @@ public class StatsController : ControllerBase
     }
 
     /// <summary>
-    /// Helper: Obtener etiqueta del día en español
+    /// Helper: Obtener etiqueta del dï¿½a en espaï¿½ol
     /// </summary>
     private static string GetDayLabel(DayOfWeek day)
     {
@@ -318,10 +312,10 @@ public class StatsController : ControllerBase
             DayOfWeek.Sunday => "Domingo",
             DayOfWeek.Monday => "Lunes",
             DayOfWeek.Tuesday => "Martes",
-            DayOfWeek.Wednesday => "Miércoles",
+            DayOfWeek.Wednesday => "Miï¿½rcoles",
             DayOfWeek.Thursday => "Jueves",
             DayOfWeek.Friday => "Viernes",
-            DayOfWeek.Saturday => "Sábado",
+            DayOfWeek.Saturday => "Sï¿½bado",
             _ => day.ToString()
         };
     }

@@ -23,7 +23,7 @@ export const visitApi = {
   },
 
   getActive: async (): Promise<Visit[]> => {
-    const response = await api.get<Visit[]>('/visit/active');
-    return response.data;
+    const response = await api.get<{ data: Visit[] }>('/visit/active');
+    return response.data.data || [];
   },
 };

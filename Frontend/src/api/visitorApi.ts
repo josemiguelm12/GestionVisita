@@ -3,8 +3,8 @@ import type { Visitor, CreateVisitorRequest } from '../types/visitor.types';
 
 export const visitorApi = {
   getAll: async (): Promise<Visitor[]> => {
-    const response = await api.get<Visitor[]>('/visitor');
-    return response.data;
+    const response = await api.get<{ data: Visitor[] }>('/visitor');
+    return response.data.data || [];
   },
 
   getById: async (id: number): Promise<Visitor> => {
@@ -27,7 +27,7 @@ export const visitorApi = {
   },
 
   search: async (query: string): Promise<Visitor[]> => {
-    const response = await api.get<Visitor[]>(`/visitor/search?q=${query}`);
-    return response.data;
+    const response = await api.get<{ data: Visitor[] }>(`/visitor/search?q=${query}`);
+    return response.data.data || [];
   },
 };

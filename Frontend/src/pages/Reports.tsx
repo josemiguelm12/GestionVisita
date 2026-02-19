@@ -3,11 +3,13 @@ import { FileDown, Calendar, Filter, Download } from 'lucide-react';
 import { visitApi } from '../api/visitApi';
 import type { Visit } from '../types/visit.types';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { useTheme } from '../context/ThemeContext';
 import toast from 'react-hot-toast';
 
 type ReportType = 'visits' | 'visitors' | 'active' | 'closed';
 
 const Reports: React.FC = () => {
+  const { theme } = useTheme();
   const [reportType, setReportType] = useState<ReportType>('visits');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -113,25 +115,39 @@ const Reports: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Reportes</h1>
+        <h1 className={`text-4xl font-medium ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>Reportes</h1>
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+      <div className={`rounded-3xl shadow border p-6 ${
+        theme === 'dark'
+          ? 'bg-slate-800 border-slate-700'
+          : 'bg-white border-gray-200'
+      }`}>
+        <h2 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>
           <Filter className="h-5 w-5" />
           Filtros de Reporte
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className={`block text-sm font-medium mb-1 ${
+              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+            }`}>
               Tipo de reporte
             </label>
             <select
               value={reportType}
               onChange={(e) => setReportType(e.target.value as ReportType)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className={`w-full px-4 py-2.5 border rounded-full focus:outline-none transition ${
+                theme === 'dark'
+                  ? 'bg-slate-700 border-slate-600 text-white focus:border-slate-500'
+                  : 'bg-white border-gray-200 text-gray-900 focus:border-gray-300'
+              }`}
             >
               <option value="visits">Todas las visitas</option>
               <option value="active">Visitas activas</option>
@@ -140,26 +156,38 @@ const Reports: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className={`block text-sm font-medium mb-1 ${
+              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+            }`}>
               Fecha inicio
             </label>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className={`w-full px-4 py-2.5 border rounded-full focus:outline-none transition ${
+                theme === 'dark'
+                  ? 'bg-slate-700 border-slate-600 text-white focus:border-slate-500'
+                  : 'bg-white border-gray-200 text-gray-900 focus:border-gray-300'
+              }`}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className={`block text-sm font-medium mb-1 ${
+              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+            }`}>
               Fecha fin
             </label>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className={`w-full px-4 py-2.5 border rounded-full focus:outline-none transition ${
+                theme === 'dark'
+                  ? 'bg-slate-700 border-slate-600 text-white focus:border-slate-500'
+                  : 'bg-white border-gray-200 text-gray-900 focus:border-gray-300'
+              }`}
             />
           </div>
 
@@ -167,7 +195,7 @@ const Reports: React.FC = () => {
             <button
               onClick={generateReport}
               disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
+              className="w-full inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-b from-gray-600 to-gray-800 text-white rounded-full hover:from-gray-700 hover:to-gray-900 transition disabled:opacity-50"
             >
               {loading ? <LoadingSpinner size="sm" /> : <FileDown className="h-4 w-4" />}
               Generar
@@ -178,14 +206,22 @@ const Reports: React.FC = () => {
 
       {/* Resultados */}
       {reportData.length > 0 && (
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-4 border-b flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900">
+        <div className={`rounded-3xl shadow border ${
+          theme === 'dark'
+            ? 'bg-slate-800 border-slate-700'
+            : 'bg-white border-gray-200'
+        }`}>
+          <div className={`p-4 border-b flex items-center justify-between ${
+            theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
+          }`}>
+            <h3 className={`font-semibold ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>
               Resultados ({reportData.length} registros)
             </h3>
             <button
               onClick={exportToCSV}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-b from-gray-600 to-gray-800 text-white rounded-full hover:from-gray-700 hover:to-gray-900 transition"
             >
               <Download className="h-4 w-4" />
               Exportar CSV
@@ -194,33 +230,63 @@ const Reports: React.FC = () => {
 
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className={theme === 'dark' ? 'bg-slate-700' : 'bg-gray-50'}>
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Visitantes</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Persona a visitar</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Departamento</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Motivo</th>
+                  <th className={`px-4 py-3 text-left text-xs font-medium uppercase ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-500'
+                  }`}>ID</th>
+                  <th className={`px-4 py-3 text-left text-xs font-medium uppercase ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-500'
+                  }`}>Visitantes</th>
+                  <th className={`px-4 py-3 text-left text-xs font-medium uppercase ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-500'
+                  }`}>Persona a visitar</th>
+                  <th className={`px-4 py-3 text-left text-xs font-medium uppercase ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-500'
+                  }`}>Departamento</th>
+                  <th className={`px-4 py-3 text-left text-xs font-medium uppercase ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-500'
+                  }`}>Fecha</th>
+                  <th className={`px-4 py-3 text-left text-xs font-medium uppercase ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-500'
+                  }`}>Estado</th>
+                  <th className={`px-4 py-3 text-left text-xs font-medium uppercase ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-500'
+                  }`}>Motivo</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className={`divide-y ${
+                theme === 'dark'
+                  ? 'bg-slate-800 divide-slate-700'
+                  : 'bg-white divide-gray-200'
+              }`}>
                 {reportData.map((visit) => (
-                  <tr key={visit.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm text-gray-900">{visit.id}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">
+                  <tr key={visit.id} className={theme === 'dark' ? 'hover:bg-slate-700' : 'hover:bg-gray-50'}>
+                    <td className={`px-4 py-3 text-sm ${
+                      theme === 'dark' ? 'text-gray-200' : 'text-gray-900'
+                    }`}>{visit.id}</td>
+                    <td className={`px-4 py-3 text-sm ${
+                      theme === 'dark' ? 'text-gray-200' : 'text-gray-900'
+                    }`}>
                       {Array.isArray(visit.visitors) && visit.visitors.length > 0
                         ? visit.visitors.map((v) => `${v.name} ${v.lastName}`).join(', ')
                         : '-'}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{visit.namePersonToVisit}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{visit.department}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">
+                    <td className={`px-4 py-3 text-sm ${
+                      theme === 'dark' ? 'text-gray-200' : 'text-gray-900'
+                    }`}>{visit.namePersonToVisit}</td>
+                    <td className={`px-4 py-3 text-sm ${
+                      theme === 'dark' ? 'text-gray-200' : 'text-gray-900'
+                    }`}>{visit.department}</td>
+                    <td className={`px-4 py-3 text-sm ${
+                      theme === 'dark' ? 'text-gray-200' : 'text-gray-900'
+                    }`}>
                       {new Date(visit.createdAt).toLocaleString('es-DO')}
                     </td>
                     <td className="px-4 py-3 text-sm">{getStatusBadge(visit.statusName)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">
+                    <td className={`px-4 py-3 text-sm max-w-xs truncate ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>
                       {visit.reason || '-'}
                     </td>
                   </tr>
@@ -233,12 +299,20 @@ const Reports: React.FC = () => {
 
       {/* Mensaje inicial */}
       {reportData.length === 0 && !loading && (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+        <div className={`rounded-3xl shadow border p-12 text-center ${
+          theme === 'dark'
+            ? 'bg-slate-800 border-slate-700'
+            : 'bg-white border-gray-200'
+        }`}>
+          <Calendar className={`h-16 w-16 mx-auto mb-4 ${
+            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+          }`} />
+          <h3 className={`text-lg font-medium mb-2 ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}>
             Generar Reporte
           </h3>
-          <p className="text-gray-500">
+          <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}>
             Seleccione los filtros y haga clic en "Generar" para ver los resultados
           </p>
         </div>

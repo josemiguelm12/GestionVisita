@@ -8,7 +8,7 @@ using System.Security.Claims;
 namespace GestionVisitaAPI.Controllers;
 
 /// <summary>
-/// Controlador de gestión de visitas
+/// Controlador de gestiï¿½n de visitas
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
@@ -30,7 +30,7 @@ public class VisitController : ControllerBase
     }
 
     /// <summary>
-    /// Listar visitas con paginación y filtros
+    /// Listar visitas con paginaciï¿½n y filtros
     /// GET /api/visit?page=1&per_page=15&search=...
     /// </summary>
     [HttpGet]
@@ -172,7 +172,39 @@ public class VisitController : ControllerBase
         try
         {
             var visits = await _visitRepository.GetActiveVisitsAsync(q);
-            return Ok(visits);
+            
+            // Proyectar a DTOs para reducir el tamaÃ±o de la respuesta
+            var visitsDto = visits.Select(v => new VisitResponseDto
+            {
+                Id = v.Id,
+                NamePersonToVisit = v.NamePersonToVisit,
+                Department = v.Department,
+                Building = v.Building,
+                Floor = v.Floor,
+                Reason = v.Reason,
+                StatusId = v.StatusId,
+                StatusName = v.Status?.Name,
+                MissionCase = v.MissionCase,
+                VehiclePlate = v.VehiclePlate,
+                PersonToVisitEmail = v.PersonToVisitEmail,
+                AssignedCarnet = v.AssignedCarnet,
+                CreatedAt = v.CreatedAt,
+                EndAt = v.EndAt,
+                Duration = v.Duration?.ToString(@"hh\:mm\:ss"),
+                IsActive = v.IsActive,
+                CreatorName = v.Creator?.Name,
+                CloserName = v.Closer?.Name,
+                Visitors = v.Visitors.Select(vis => new VisitorSummaryDto
+                {
+                    Id = vis.Id,
+                    Name = vis.Name,
+                    LastName = vis.LastName,
+                    FullName = vis.FullName,
+                    IdentityDocument = vis.IdentityDocument
+                }).ToList()
+            }).ToList();
+            
+            return Ok(new { data = visitsDto });
         }
         catch (Exception ex)
         {
@@ -268,7 +300,7 @@ public class VisitController : ControllerBase
         {
             return UnprocessableEntity(new
             {
-                error = "Datos de entrada inválidos",
+                error = "Datos de entrada invï¿½lidos",
                 errors = ModelState
             });
         }
@@ -341,7 +373,7 @@ public class VisitController : ControllerBase
     }
 
 
-    /// Actualizar placa de vehículo
+    /// Actualizar placa de vehï¿½culo
     /// PATCH /api/visit/{id}/vehicle-plate
     [HttpPatch("{id}/vehicle-plate")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
@@ -419,7 +451,7 @@ public class VisitController : ControllerBase
     }
 
 
-    /// Obtener estadísticas del dashboard
+    /// Obtener estadï¿½sticas del dashboard
     /// GET /api/visit/stats/dashboard
     [HttpGet("stats/dashboard")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
@@ -433,7 +465,7 @@ public class VisitController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting dashboard stats");
-            return StatusCode(500, new { error = "Error al obtener estadísticas" });
+            return StatusCode(500, new { error = "Error al obtener estadï¿½sticas" });
         }
     }
 
@@ -450,7 +482,7 @@ public class VisitController : ControllerBase
     }
 }
 
-// DTOs auxiliares para endpoints específicos
+// DTOs auxiliares para endpoints especï¿½ficos
 public class UpdateVehiclePlateDto
 {
     public string? VehiclePlate { get; set; }

@@ -2,13 +2,15 @@ import React from 'react';
 import { Clock, CheckCircle } from 'lucide-react';
 import type { Visit } from '../../types/visit.types';
 import { formatDateTime } from '../../utils/formatters';
+import { useTheme } from '../../context/ThemeContext';
 
 interface VisitTableProps {
   visits: Visit[];
-  onClose: (visit: Visit) => void;
+  onClose?: (visit: Visit) => void;
 }
 
 const VisitTable: React.FC<VisitTableProps> = ({ visits, onClose }) => {
+  const { theme } = useTheme();
 
   const getStatusBadge = (status: string | null) => {
     const statusMap: Record<string, { label: string; className: string }> = {
@@ -44,20 +46,20 @@ const VisitTable: React.FC<VisitTableProps> = ({ visits, onClose }) => {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
+        <thead className={theme === 'dark' ? 'bg-slate-700' : 'bg-gray-50'}>
           <tr>
-            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Visitantes</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Persona a visitar</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Departamento</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Motivo</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hora entrada</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Duración</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
+            <th className={`px-4 py-3 text-left text-xs font-medium uppercase ${ theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>Visitantes</th>
+            <th className={`px-4 py-3 text-left text-xs font-medium uppercase ${ theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>Persona a visitar</th>
+            <th className={`px-4 py-3 text-left text-xs font-medium uppercase ${ theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>Departamento</th>
+            <th className={`px-4 py-3 text-left text-xs font-medium uppercase ${ theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>Motivo</th>
+            <th className={`px-4 py-3 text-left text-xs font-medium uppercase ${ theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>Hora entrada</th>
+            <th className={`px-4 py-3 text-left text-xs font-medium uppercase ${ theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>Duración</th>
+            <th className={`px-4 py-3 text-left text-xs font-medium uppercase ${ theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>Estado</th>
+            <th className={`px-4 py-3 text-right text-xs font-medium uppercase ${ theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>Acciones</th>
           </tr>
         </thead>
 
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className={`divide-y ${theme === 'dark' ? 'bg-slate-800 divide-slate-700' : 'bg-white divide-gray-200'}`}>
           {visits.map((visit) => {
             const visitorsList = Array.isArray(visit.visitors) ? visit.visitors : [];
 
@@ -67,28 +69,28 @@ const VisitTable: React.FC<VisitTableProps> = ({ visits, onClose }) => {
                 : '-';
 
             return (
-              <tr key={visit.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-sm font-medium text-gray-900">
+              <tr key={visit.id} className={theme === 'dark' ? 'hover:bg-slate-700' : 'hover:bg-gray-50'}>
+                <td className={`px-4 py-3 text-sm font-medium ${ theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>
                   {visitorsText}
                 </td>
 
-                <td className="px-4 py-3 text-sm text-gray-900">
+                <td className={`px-4 py-3 text-sm ${ theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>
                   {visit.namePersonToVisit}
                 </td>
 
-                <td className="px-4 py-3 text-sm text-gray-600">
+                <td className={`px-4 py-3 text-sm ${ theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                   {visit.department}
                 </td>
 
-                <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">
+                <td className={`px-4 py-3 text-sm max-w-xs truncate ${ theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                   {visit.reason || '-'}
                 </td>
 
-                <td className="px-4 py-3 text-sm text-gray-600">
+                <td className={`px-4 py-3 text-sm ${ theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                   {formatDateTime(visit.createdAt)}
                 </td>
 
-                <td className="px-4 py-3 text-sm text-gray-600">
+                <td className={`px-4 py-3 text-sm ${ theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     {calculateDuration(visit.createdAt, visit.endAt)}
@@ -100,10 +102,10 @@ const VisitTable: React.FC<VisitTableProps> = ({ visits, onClose }) => {
                 </td>
 
                 <td className="px-4 py-3 text-right text-sm font-medium">
-                  {visit.statusName === 'Abierto' && (
+                  {visit.statusName === 'Abierto' && onClose && (
                     <button
                       onClick={() => onClose(visit)}
-                      className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-900"
+                      className={`inline-flex items-center gap-1 transition ${ theme === 'dark' ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
                     >
                       <CheckCircle className="h-4 w-4" />
                       Cerrar
@@ -111,7 +113,7 @@ const VisitTable: React.FC<VisitTableProps> = ({ visits, onClose }) => {
                   )}
 
                   {visit.statusName === 'Cerrado' && (
-                    <span className="text-gray-400 text-xs">Cerrada</span>
+                    <span className={`text-xs ${ theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>Cerrada</span>
                   )}
                 </td>
               </tr>
@@ -120,7 +122,7 @@ const VisitTable: React.FC<VisitTableProps> = ({ visits, onClose }) => {
 
           {visits.length === 0 && (
             <tr>
-              <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+              <td colSpan={8} className={`px-4 py-8 text-center ${ theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
                 No se encontraron visitas
               </td>
             </tr>

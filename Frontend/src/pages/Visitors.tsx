@@ -7,9 +7,13 @@ import VisitorFormModal from '../components/visitors/VisitorFormModal';
 import SearchBar from '../components/common/SearchBar';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { useTheme } from '../context/ThemeContext';
+import { usePermissions } from '../hooks/usePermissions';
 import toast from 'react-hot-toast';
 
 const Visitors: React.FC = () => {
+  const { theme } = useTheme();
+  const { canCreateVisitors, canEditVisitors, canDeleteVisitors } = usePermissions();
   const [visitors, setVisitors] = useState<Visitor[]>([]);
   const [filteredVisitors, setFilteredVisitors] = useState<Visitor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -112,16 +116,20 @@ const Visitors: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pb-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Visitantes</h1>
-        <button
-          onClick={handleCreate}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-        >
-          <Plus className="h-4 w-4" />
-          Nuevo Visitante
-        </button>
+        <h1 className={`text-4xl font-medium ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>Visitantes</h1>
+        {canCreateVisitors && (
+          <button
+            onClick={handleCreate}
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-b from-gray-600 to-gray-800 text-white hover:from-gray-700 hover:to-gray-900 transition"
+          >
+            <Plus className="h-5 w-5" strokeWidth={2} />
+            Nuevo Visitante
+          </button>
+        )}
       </div>
 
       <div className="flex items-center gap-4">
@@ -133,11 +141,15 @@ const Visitors: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
+      <div className={`rounded-3xl border overflow-hidden ${
+        theme === 'dark'
+          ? 'bg-slate-800 border-slate-700'
+          : 'bg-white border-gray-200'
+      }`}>
         <VisitorTable
           visitors={filteredVisitors}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
+          onEdit={canEditVisitors ? handleEdit : undefined}
+          onDelete={canDeleteVisitors ? handleDelete : undefined}
           onView={handleView}
         />
       </div>

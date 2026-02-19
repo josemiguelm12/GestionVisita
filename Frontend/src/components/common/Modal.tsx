@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 
 interface ModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, size = 'md' }) => {
+  const { theme } = useTheme();
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -41,14 +43,20 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, size = 
       onClick={onClose}
     >
       <div
-        className={`bg-white rounded-lg shadow-xl w-full ${sizeClasses[size]} max-h-[90vh] flex flex-col`}
+        className={`rounded-3xl shadow-xl w-full ${sizeClasses[size]} max-h-[90vh] flex flex-col border ${
+          theme === 'dark' ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+        <div className={`flex items-center justify-between p-4 border-b ${
+          theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
+        }`}>
+          <h2 className={`text-lg font-semibold ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}>{title}</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className={theme === 'dark' ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'}
           >
             <X className="h-5 w-5" />
           </button>

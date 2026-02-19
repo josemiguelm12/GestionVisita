@@ -8,7 +8,7 @@ using System.Security.Claims;
 namespace GestionVisitaAPI.Controllers;
 
 /// <summary>
-/// Controlador de gestión de visitantes
+/// Controlador de gestiï¿½n de visitantes
 /// Mapea VisitorController de Laravel
 /// </summary>
 [ApiController]
@@ -41,7 +41,23 @@ public class VisitorController : ControllerBase
         try
         {
             var visitors = await _visitorRepository.GetAllAsync();
-            return Ok(visitors);
+            
+            // Proyectar a DTOs para reducir el tamaÃ±o de la respuesta
+            var visitorsDto = visitors.Select(v => new VisitorResponseDto
+            {
+                Id = v.Id,
+                IdentityDocument = v.IdentityDocument,
+                DocumentType = v.DocumentType.ToString(),
+                Name = v.Name,
+                LastName = v.LastName,
+                FullName = v.FullName,
+                Phone = v.Phone,
+                Email = v.Email,
+                Institution = v.Institution,
+                CreatedAt = v.CreatedAt
+            }).ToList();
+            
+            return Ok(new { data = visitorsDto });
         }
         catch (Exception ex)
         {
@@ -78,7 +94,7 @@ public class VisitorController : ControllerBase
     }
 
     /// <summary>
-    /// Buscar visitantes por término
+    /// Buscar visitantes por tï¿½rmino
     /// GET /api/visitor/search?q=...
     /// </summary>
     [HttpGet("search")]
@@ -87,7 +103,7 @@ public class VisitorController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(q))
         {
-            return BadRequest(new { error = "El término de búsqueda es requerido" });
+            return BadRequest(new { error = "El tï¿½rmino de bï¿½squeda es requerido" });
         }
 
         try
@@ -142,7 +158,7 @@ public class VisitorController : ControllerBase
         {
             return UnprocessableEntity(new
             {
-                error = "Datos de entrada inválidos",
+                error = "Datos de entrada invï¿½lidos",
                 errors = ModelState
             });
         }
@@ -188,7 +204,7 @@ public class VisitorController : ControllerBase
         {
             return UnprocessableEntity(new
             {
-                error = "Datos de entrada inválidos",
+                error = "Datos de entrada invï¿½lidos",
                 errors = ModelState
             });
         }

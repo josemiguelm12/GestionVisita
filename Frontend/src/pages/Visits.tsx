@@ -7,9 +7,13 @@ import VisitFormModal from '../components/visits/VisitFormModal';
 import SearchBar from '../components/common/SearchBar';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { useTheme } from '../context/ThemeContext';
+import { usePermissions } from '../hooks/usePermissions';
 import toast from 'react-hot-toast';
 
 const Visits: React.FC = () => {
+  const { theme } = useTheme();
+  const { canCreateVisits, canCloseVisits } = usePermissions();
   const [visits, setVisits] = useState<Visit[]>([]);
   const [filteredVisits, setFilteredVisits] = useState<Visit[]>([]);
   const [loading, setLoading] = useState(true);
@@ -115,16 +119,20 @@ const activeCount = visits.filter((v) => v.statusName === 'Abierto').length;
 const closedCount = visits.filter((v) => v.statusName === 'Cerrado').length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pb-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Visitas</h1>
-        <button
-          onClick={handleCreate}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-        >
-          <Plus className="h-4 w-4" />
-          Nueva Visita
-        </button>
+        <h1 className={`text-4xl font-medium ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>Visitas</h1>
+        {canCreateVisits && (
+          <button
+            onClick={handleCreate}
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-b from-gray-600 to-gray-800 text-white hover:from-gray-700 hover:to-gray-900 transition"
+          >
+            <Plus className="h-5 w-5" strokeWidth={2} />
+            Nueva Visita
+          </button>
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
@@ -138,30 +146,36 @@ const closedCount = visits.filter((v) => v.statusName === 'Cerrado').length;
         <div className="flex gap-2">
           <button
             onClick={() => setFilterStatus('all')}
-            className={`px-4 py-2 rounded-md text-sm font-medium ${
+            className={`px-5 py-2.5 rounded-full text-sm font-medium transition ${
               filterStatus === 'all'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-gradient-to-b from-gray-600 to-gray-800 text-white'
+                : theme === 'dark'
+                  ? 'bg-slate-700 text-gray-300 hover:bg-slate-600 border border-slate-600'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
             }`}
           >
             Todas ({visits.length})
           </button>
           <button
             onClick={() => setFilterStatus('active')}
-            className={`px-4 py-2 rounded-md text-sm font-medium ${
+            className={`px-5 py-2.5 rounded-full text-sm font-medium transition ${
               filterStatus === 'active'
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-gradient-to-b from-green-600 to-green-800 text-white'
+                : theme === 'dark'
+                  ? 'bg-slate-700 text-gray-300 hover:bg-slate-600 border border-slate-600'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
             }`}
           >
             Activas ({activeCount})
           </button>
           <button
             onClick={() => setFilterStatus('closed')}
-            className={`px-4 py-2 rounded-md text-sm font-medium ${
+            className={`px-5 py-2.5 rounded-full text-sm font-medium transition ${
               filterStatus === 'closed'
-                ? 'bg-gray-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-gradient-to-b from-gray-600 to-gray-800 text-white'
+                : theme === 'dark'
+                  ? 'bg-slate-700 text-gray-300 hover:bg-slate-600 border border-slate-600'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
             }`}
           >
             Cerradas ({closedCount})
@@ -169,8 +183,12 @@ const closedCount = visits.filter((v) => v.statusName === 'Cerrado').length;
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
-        <VisitTable visits={filteredVisits} onClose={handleClose} />
+      <div className={`rounded-3xl border overflow-hidden ${
+        theme === 'dark'
+          ? 'bg-slate-800 border-slate-700'
+          : 'bg-white border-gray-200'
+      }`}>
+        <VisitTable visits={filteredVisits} onClose={canCloseVisits ? handleClose : undefined} />
       </div>
 
       <VisitFormModal

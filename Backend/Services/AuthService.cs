@@ -243,6 +243,10 @@ public class AuthService
             {
                 "manage_users",
                 "manage_roles",
+                "create_visitors",
+                "edit_visitors",
+                "delete_visitors",
+                "view_visitors",
                 "create_visits",
                 "view_all_visits",
                 "edit_visits",
@@ -252,26 +256,31 @@ public class AuthService
                 "view_reports",
                 "manage_settings"
             },
-            "Asist_adm" => new List<string>
+            "Analista" => new List<string>
             {
+                "create_visitors",
+                "edit_visitors",
+                "delete_visitors",
+                "view_visitors",
                 "create_visits",
                 "view_all_visits",
                 "edit_visits",
+                "delete_visits",
                 "close_visits",
                 "export_data",
                 "view_reports"
             },
-            "Guardia" => new List<string>
+            "Recepcion" => new List<string>
             {
-                "view_active_visits",
-                "close_visits_restricted",
-                "validate_qr",
-                "register_vehicle_plate"
-            },
-            "aux_ugc" => new List<string>
-            {
-                "view_mission_visits",
-                "close_mission_visits"
+                "create_visitors",
+                "edit_visitors",
+                "delete_visitors",
+                "view_visitors",
+                "create_visits",
+                "view_all_visits",
+                "edit_visits",
+                "delete_visits",
+                "close_visits"
             },
             _ => new List<string>()
         };

@@ -29,6 +29,7 @@ public class VisitRepository : Repository<Visit>, IVisitRepository
     public async Task<IEnumerable<Visit>> GetActiveVisitsAsync(string? search = null)
     {
         var query = _dbSet
+            .AsNoTracking()
             .Include(v => v.Creator)
             .Include(v => v.Status)
             .Include(v => v.Visitors)
@@ -46,12 +47,14 @@ public class VisitRepository : Repository<Visit>, IVisitRepository
 
         return await query
             .OrderByDescending(v => v.CreatedAt)
+            .Take(100) // Limitar a 100 registros para evitar respuestas muy grandes
             .ToListAsync();
     }
 
     public async Task<IEnumerable<Visit>> GetActiveMissionVisitsAsync(string? search = null)
     {
         var query = _dbSet
+            .AsNoTracking()
             .Include(v => v.Creator)
             .Include(v => v.Status)
             .Include(v => v.Visitors)
@@ -68,12 +71,14 @@ public class VisitRepository : Repository<Visit>, IVisitRepository
 
         return await query
             .OrderByDescending(v => v.CreatedAt)
+            .Take(100)
             .ToListAsync();
     }
 
     public async Task<IEnumerable<Visit>> GetActiveNonMissionVisitsAsync(string? search = null)
     {
         var query = _dbSet
+            .AsNoTracking()
             .Include(v => v.Creator)
             .Include(v => v.Status)
             .Include(v => v.Visitors)
@@ -90,6 +95,7 @@ public class VisitRepository : Repository<Visit>, IVisitRepository
 
         return await query
             .OrderByDescending(v => v.CreatedAt)
+            .Take(100)
             .ToListAsync();
     }
 
@@ -333,42 +339,47 @@ public class VisitRepository : Repository<Visit>, IVisitRepository
     public async Task<List<(DateTime Date, int Count)>> GetDailyTrendAsync(DateTime startDate, DateTime endDate)
     {
         // GROUP BY directo en SQL - mucho más eficiente
-        return await _dbSet
+        // Usar clase anónima primero y luego convertir a tupla
+        var result = await _dbSet
             .AsNoTracking()
             .Where(v => v.CreatedAt >= startDate && v.CreatedAt <= endDate)
             .GroupBy(v => v.CreatedAt.Date)
-            .Select(g => new ValueTuple<DateTime, int>(g.Key, g.Count()))
-            .OrderBy(x => x.Item1)
+            .Select(g => new { Date = g.Key, Count = g.Count() })
+            .OrderBy(x => x.Date)
             .ToListAsync();
+
+        return result.Select(x => (x.Date, x.Count)).ToList();
     }
 
     public async Task<List<(string Department, int Count)>> GetTopDepartmentsAsync(int limit = 10)
     {
         // GROUP BY directo en SQL
-        return await _dbSet
+        var result = await _dbSet
             .AsNoTracking()
             .GroupBy(v => v.Department)
-            .Select(g => new ValueTuple<string, int>(g.Key, g.Count()))
-            .OrderByDescending(x => x.Item2)
+            .Select(g => new { Department = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count)
             .Take(limit)
             .ToListAsync();
+
+        return result.Select(x => (x.Department, x.Count)).ToList();
     }
 
     public async Task<List<(string Department, int Count)>> GetTopDepartmentsByDateRangeAsync(DateTime startDate, DateTime endDate, int? limit = null)
     {
         // GROUP BY directo en SQL con filtro de fechas
-        var query = _dbSet
+        var baseQuery = _dbSet
             .AsNoTracking()
             .Where(v => v.CreatedAt >= startDate && v.CreatedAt <= endDate)
             .GroupBy(v => v.Department)
-            .Select(g => new ValueTuple<string, int>(g.Key, g.Count()))
-            .OrderByDescending(x => x.Item2);
+            .Select(g => new { Department = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count);
 
-        if (limit.HasValue)
-        {
-            query = (IOrderedQueryable<(string, int)>)query.Take(limit.Value);
-        }
+        // Aplicar límite si se especifica, o tomar todos los resultados
+        var result = limit.HasValue 
+            ? await baseQuery.Take(limit.Value).ToListAsync()
+            : await baseQuery.ToListAsync();
 
-        return await query.ToListAsync();
+        return result.Select(x => (x.Department, x.Count)).ToList();
     }
 }

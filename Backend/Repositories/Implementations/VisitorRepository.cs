@@ -6,12 +6,22 @@ using GestionVisitaAPI.Repositories.Interfaces;
 namespace GestionVisitaAPI.Repositories.Implementations;
 
 /// <summary>
-/// Implementación del repositorio de visitantes
+/// Implementaciï¿½n del repositorio de visitantes
 /// </summary>
 public class VisitorRepository : Repository<Visitor>, IVisitorRepository
 {
     public VisitorRepository(ApplicationDbContext context) : base(context)
     {
+    }
+
+    // Sobrescribir para limitar resultados y optimizar
+    public override async Task<IEnumerable<Visitor>> GetAllAsync()
+    {
+        return await _dbSet
+            .AsNoTracking()
+            .OrderByDescending(v => v.CreatedAt)
+            .Take(1000) // Limitar a 1000 visitantes mÃ¡s recientes
+            .ToListAsync();
     }
 
     public async Task<Visitor?> GetByIdentityDocumentAsync(string identityDocument)

@@ -28,9 +28,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString, npgsqlOptions =>
+    options.UseSqlServer(connectionString, sqlServerOptions =>
     {
-        npgsqlOptions.EnableRetryOnFailure(5);
+        sqlServerOptions.EnableRetryOnFailure(5);
     }));
 
 #endregion

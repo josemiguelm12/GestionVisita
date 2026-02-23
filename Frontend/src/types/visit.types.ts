@@ -12,6 +12,8 @@ export interface Visit {
   id: number;
   namePersonToVisit: string;
   department: string;
+  departmentId: number | null;
+  departmentName: string | null;
   building: number | null;
   floor: number | null;
   reason: string | null;
@@ -33,6 +35,7 @@ export interface Visit {
 export interface CreateVisitRequest {
   namePersonToVisit: string;
   department: string;
+  departmentId?: number | null;
   building?: number | null;
   floor?: number | null;
   reason?: string | null;

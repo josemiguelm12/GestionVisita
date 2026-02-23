@@ -109,7 +109,20 @@ public class VisitorController : ControllerBase
         try
         {
             var visitors = await _visitorService.SearchVisitorsAsync(q);
-            return Ok(visitors);
+            var visitorsDto = visitors.Select(v => new VisitorResponseDto
+            {
+                Id = v.Id,
+                IdentityDocument = v.IdentityDocument,
+                DocumentType = v.DocumentType.ToString(),
+                Name = v.Name,
+                LastName = v.LastName,
+                FullName = v.FullName,
+                Phone = v.Phone,
+                Email = v.Email,
+                Institution = v.Institution,
+                CreatedAt = v.CreatedAt
+            }).ToList();
+            return Ok(new { data = visitorsDto });
         }
         catch (Exception ex)
         {

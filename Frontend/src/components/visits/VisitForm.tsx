@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { X } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
@@ -8,6 +8,7 @@ import VisitorAutocomplete from './VisitorAutocomplete';
 import VisitorFormModal from '../visitors/VisitorFormModal';
 import type { CreateVisitorRequest } from '../../types/visitor.types';
 import { visitorApi } from '../../api/visitorApi';
+import { departmentApi, type Department } from '../../api/departmentApi';
 import LoadingSpinner from '../common/LoadingSpinner';
 import toast from 'react-hot-toast';
 
@@ -19,6 +20,13 @@ interface VisitFormProps {
 const VisitForm: React.FC<VisitFormProps> = ({ onSubmit, onCancel }) => {
   const { theme } = useTheme();
   const [selectedVisitors, setSelectedVisitors] = useState<Visitor[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+
+  useEffect(() => {
+    departmentApi.getAll().then(setDepartments).catch(() => {
+      toast.error('Error al cargar departamentos');
+    });
+  }, []);
 
   const inputClass = `w-full px-4 py-2.5 border rounded-full focus:outline-none transition ${
     theme === 'dark'
@@ -28,6 +36,11 @@ const VisitForm: React.FC<VisitFormProps> = ({ onSubmit, onCancel }) => {
 
   const labelClass = `block text-sm font-medium mb-1 ${
     theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+  }`;
+  const selectClass = `w-full px-4 py-2.5 border rounded-full focus:outline-none transition appearance-none ${
+    theme === 'dark'
+      ? 'bg-slate-700 border-slate-600 text-white focus:border-slate-500'
+      : 'bg-white border-gray-200 text-gray-900 focus:border-gray-300'
   }`;
   const [isVisitorModalOpen, setIsVisitorModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,10 +84,17 @@ const VisitForm: React.FC<VisitFormProps> = ({ onSubmit, onCancel }) => {
       return;
     }
 
+    // Buscar el nombre del departamento a partir del ID
+    const selectedDept = departments.find(d => d.id === Number(data.departmentId));
+
     setIsSubmitting(true);
     try {
       await onSubmit({
         ...data,
+        department: selectedDept?.name || '',
+        departmentId: selectedDept?.id || null,
+        personToVisitEmail: data.personToVisitEmail?.trim() || undefined,
+        vehiclePlate: data.vehiclePlate?.trim() || undefined,
         visitorIds: selectedVisitors.map((v) => v.id),
       });
     } finally {
@@ -126,8 +146,16 @@ const VisitForm: React.FC<VisitFormProps> = ({ onSubmit, onCancel }) => {
           </div>
           <div>
             <label className={labelClass}>Departamento <span className="text-red-500">*</span></label>
-            <input type="text" {...register('department', { required: 'Este campo es requerido' })} className={inputClass} />
-            {errors.department && <p className="mt-1 text-sm text-red-600">{errors.department.message}</p>}
+            <select
+              {...register('departmentId', { required: 'Debe seleccionar un departamento' })}
+              className={selectClass}
+            >
+              <option value="">Seleccionar departamento...</option>
+              {departments.map((dept) => (
+                <option key={dept.id} value={dept.id}>{dept.name}</option>
+              ))}
+            </select>
+            {errors.departmentId && <p className="mt-1 text-sm text-red-600">{errors.departmentId.message}</p>}
           </div>
         </div>
 

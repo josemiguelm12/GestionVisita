@@ -5,8 +5,8 @@ using System.Text.Json;
 namespace GestionVisitaAPI.Services;
 
 /// <summary>
-/// Servicio de abstracción de caché
-/// Soporta Memory Cache (desarrollo) y Redis (producción)
+/// Servicio de abstracciï¿½n de cachï¿½
+/// Soporta Memory Cache (desarrollo) y Redis (producciï¿½n)
 /// Mapea CacheService de Laravel
 /// </summary>
 public class CacheService
@@ -26,13 +26,13 @@ public class CacheService
         _distributedCache = distributedCache;
         _logger = logger;
         
-        // Usar distributed cache solo si está configurado (producción con Redis)
+        // Usar distributed cache solo si estï¿½ configurado (producciï¿½n con Redis)
         var redisConnection = configuration.GetSection("CacheSettings:RedisConnection").Value;
         _useDistributedCache = !string.IsNullOrEmpty(redisConnection) && distributedCache != null;
     }
 
     /// <summary>
-    /// Obtener valor del caché
+    /// Obtener valor del cachï¿½
     /// </summary>
     public async Task<T?> GetAsync<T>(string key)
     {
@@ -64,7 +64,7 @@ public class CacheService
     }
 
     /// <summary>
-    /// Guardar valor en caché con expiración
+    /// Guardar valor en cachï¿½ con expiraciï¿½n
     /// </summary>
     public async Task SetAsync<T>(string key, T value, TimeSpan? expiration = null)
     {
@@ -101,7 +101,7 @@ public class CacheService
     }
 
     /// <summary>
-    /// Eliminar valor del caché
+    /// Eliminar valor del cachï¿½
     /// </summary>
     public async Task RemoveAsync(string key)
     {
@@ -125,7 +125,7 @@ public class CacheService
     }
 
     /// <summary>
-    /// Obtener o crear valor en caché (Remember pattern)
+    /// Obtener o crear valor en cachï¿½ (Remember pattern)
     /// </summary>
     public async Task<T> GetOrSetAsync<T>(
         string key, 
@@ -134,7 +134,7 @@ public class CacheService
     {
         try
         {
-            // Intentar obtener del caché
+            // Intentar obtener del cachï¿½
             var cachedValue = await GetAsync<T>(key);
             if (cachedValue != null)
             {
@@ -151,13 +151,13 @@ public class CacheService
         {
             _logger.LogError(ex, "Error in GetOrSet for key: {Key}", key);
             
-            // Si falla el caché, al menos ejecutar la factory
+            // Si falla el cachï¿½, al menos ejecutar la factory
             return await factory();
         }
     }
 
     /// <summary>
-    /// Verificar si existe una key en caché
+    /// Verificar si existe una key en cachï¿½
     /// </summary>
     public async Task<bool> ExistsAsync(string key)
     {
@@ -181,15 +181,15 @@ public class CacheService
     }
 
     /// <summary>
-    /// Limpiar múltiples keys por patrón (solo para Memory Cache)
-    /// NOTA: Redis requeriría Lua script o KeyScan
+    /// Limpiar mï¿½ltiples keys por patrï¿½n (solo para Memory Cache)
+    /// NOTA: Redis requerirï¿½a Lua script o KeyScan
     /// </summary>
     public void RemoveByPattern(string pattern)
     {
         try
         {
             // Esta funcionalidad es limitada en Memory Cache
-            // En producción con Redis, se usaría SCAN + DEL
+            // En producciï¿½n con Redis, se usarï¿½a SCAN + DEL
             _logger.LogWarning("RemoveByPattern is not fully supported in current cache implementation");
         }
         catch (Exception ex)
@@ -209,7 +209,7 @@ public class CacheService
     }
 
     /// <summary>
-    /// Helper: Cache key para estadísticas
+    /// Helper: Cache key para estadï¿½sticas
     /// </summary>
     public string GetStatsCacheKey(string statsType)
     {
@@ -217,15 +217,15 @@ public class CacheService
     }
 
     /// <summary>
-    /// Helper: Invalidar caché de visitas
+    /// Helper: Invalidar cachï¿½ de visitas
     /// </summary>
     public async Task InvalidateVisitsCacheAsync()
     {
         await RemoveAsync("visits:active");
         await RemoveAsync("visits:active:mission");
         await RemoveAsync("visits:active:non_mission");
-        await RemoveAsync("stats:dashboard");
-        await RemoveAsync("stats:mission");
+        await RemoveAsync("stats:kpis");
+        await RemoveAsync("stats:kpis_mission");
         await RemoveAsync("stats:non_mission");
 
         _logger.LogInformation("Visits cache invalidated");

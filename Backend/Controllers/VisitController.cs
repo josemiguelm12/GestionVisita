@@ -17,15 +17,18 @@ public class VisitController : ControllerBase
 {
     private readonly VisitService _visitService;
     private readonly IVisitRepository _visitRepository;
+    private readonly CacheService _cacheService;
     private readonly ILogger<VisitController> _logger;
 
     public VisitController(
         VisitService visitService,
         IVisitRepository visitRepository,
+        CacheService cacheService,
         ILogger<VisitController> logger)
     {
         _visitService = visitService;
         _visitRepository = visitRepository;
+        _cacheService = cacheService;
         _logger = logger;
     }
 
@@ -63,6 +66,8 @@ public class VisitController : ControllerBase
             Id = v.Id,
             NamePersonToVisit = v.NamePersonToVisit,
             Department = v.Department,
+            DepartmentId = v.DepartmentId,
+            DepartmentName = v.DepartmentEntity?.Name,
             Building = v.Building,
             Floor = v.Floor,
             Reason = v.Reason,
@@ -125,6 +130,8 @@ public class VisitController : ControllerBase
                 Id = visit.Id,
                 NamePersonToVisit = visit.NamePersonToVisit,
                 Department = visit.Department,
+                DepartmentId = visit.DepartmentId,
+                DepartmentName = visit.DepartmentEntity?.Name,
                 Building = visit.Building,
                 Floor = visit.Floor,
                 Reason = visit.Reason,
@@ -179,6 +186,8 @@ public class VisitController : ControllerBase
                 Id = v.Id,
                 NamePersonToVisit = v.NamePersonToVisit,
                 Department = v.Department,
+                DepartmentId = v.DepartmentId,
+                DepartmentName = v.DepartmentEntity?.Name,
                 Building = v.Building,
                 Floor = v.Floor,
                 Reason = v.Reason,
@@ -320,6 +329,8 @@ public class VisitController : ControllerBase
                 return BadRequest(new { error = result.Error });
             }
 
+            await _cacheService.InvalidateVisitsCacheAsync();
+
             return CreatedAtAction(
                 nameof(GetVisit),
                 new { id = result.Visit!.Id },
@@ -358,6 +369,8 @@ public class VisitController : ControllerBase
             {
                 return BadRequest(new { error = result.Error });
             }
+
+            await _cacheService.InvalidateVisitsCacheAsync();
 
             return Ok(new
             {

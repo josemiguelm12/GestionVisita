@@ -23,6 +23,7 @@ public class VisitRepository : Repository<Visit>, IVisitRepository
             .Include(v => v.Closer)
             .Include(v => v.Status)
             .Include(v => v.Visitors)
+            .Include(v => v.DepartmentEntity)
             .FirstOrDefaultAsync(v => v.Id == id);
     }
 
@@ -210,6 +211,7 @@ public class VisitRepository : Repository<Visit>, IVisitRepository
             .Include(v => v.Closer)
             .Include(v => v.Status)
             .Include(v => v.Visitors)
+            .Include(v => v.DepartmentEntity)
             .AsQueryable();
 
         query = ApplyFilters(query, filters);

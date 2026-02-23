@@ -1,5 +1,5 @@
 import api from './axiosConfig';
-import type { Stats, VisitsByDate } from '../types/stats.types';
+import type { Stats, VisitsByDate, DepartmentStats } from '../types/stats.types';
 
 export const statsApi = {
   // KPIs principales del dashboard
@@ -13,5 +13,11 @@ export const statsApi = {
     const response = await api.get<{ dates: string[]; visits: number[] }>(`/stats/daily?days=${days}`);
     const { dates, visits } = response.data;
     return dates.map((date, idx) => ({ date, count: visits[idx] ?? 0 }));
+  },
+
+  // Visitas por departamento
+  getByDepartment: async (): Promise<DepartmentStats[]> => {
+    const response = await api.get<DepartmentStats[]>('/stats/by-department');
+    return response.data;
   },
 };

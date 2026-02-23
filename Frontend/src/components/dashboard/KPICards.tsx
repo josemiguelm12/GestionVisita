@@ -56,7 +56,16 @@ const KPICards: React.FC = () => {
       }
     };
     loadData();
-    return () => { mounted = false; };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') loadData();
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      mounted = false;
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, []);
 
   if (loading) {

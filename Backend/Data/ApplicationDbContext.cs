@@ -24,6 +24,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<VisitStatusEntity> VisitStatuses { get; set; }
     public DbSet<VisitVisitor> VisitVisitors { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
+    public DbSet<Department> Departments { get; set; }
 
     #endregion
 
@@ -149,8 +150,15 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(v => v.EndAt);
             entity.HasIndex(v => v.VehiclePlate);
             entity.HasIndex(v => v.Department);
+            entity.HasIndex(v => v.DepartmentId);
 
-            // Relaci�n con VisitStatusEntity
+            // Relación con Department
+            entity.HasOne(v => v.DepartmentEntity)
+                .WithMany(d => d.Visits)
+                .HasForeignKey(v => v.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Relación con VisitStatusEntity
             entity.HasOne(v => v.Status)
                 .WithMany(vs => vs.Visits)
                 .HasForeignKey(v => v.StatusId)
@@ -216,15 +224,40 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Role>().HasData(
             new Role { Id = 1, Name = "Admin", Description = "Administrador del sistema", CreatedAt = seedDate, UpdatedAt = seedDate },
-            new Role { Id = 2, Name = "Asist_adm", Description = "Asistente Administrativo", CreatedAt = seedDate, UpdatedAt = seedDate },
-            new Role { Id = 3, Name = "Guardia", Description = "Personal de Seguridad", CreatedAt = seedDate, UpdatedAt = seedDate },
-            new Role { Id = 4, Name = "aux_ugc", Description = "Auxiliar UGC", CreatedAt = seedDate, UpdatedAt = seedDate }
+            new Role { Id = 2, Name = "Recepcion", Description = "Recepcion", CreatedAt = seedDate, UpdatedAt = seedDate },
+            new Role { Id = 3, Name = "Analista", Description = "Analista", CreatedAt = seedDate, UpdatedAt = seedDate }
         );
 
         modelBuilder.Entity<VisitStatusEntity>().HasData(
             new VisitStatusEntity { Id = 1, Name = "Abierto", CreatedAt = seedDate, UpdatedAt = seedDate },
             new VisitStatusEntity { Id = 2, Name = "Cerrado", CreatedAt = seedDate, UpdatedAt = seedDate }
         );
+
+        #endregion
+
+        #region Seed Data - Departamentos
+
+        modelBuilder.Entity<Department>().HasData(
+            new Department { Id = 1, Name = "Dirección/Gerencia General", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+            new Department { Id = 2, Name = "Recursos Humanos (RRHH)", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+            new Department { Id = 3, Name = "Administración y Finanzas", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+            new Department { Id = 4, Name = "Tecnologías de la Información (IT/TI)", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+            new Department { Id = 5, Name = "Atención al Usuario", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+            new Department { Id = 6, Name = "Legal", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+            new Department { Id = 7, Name = "Servicios Generales", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+            new Department { Id = 8, Name = "Planificación y Desarrollo", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+            new Department { Id = 9, Name = "Comunicaciones", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate },
+            new Department { Id = 10, Name = "Auditoría Interna", IsActive = true, CreatedAt = seedDate, UpdatedAt = seedDate }
+        );
+
+        modelBuilder.Entity<Department>(entity =>
+        {
+            entity.HasKey(d => d.Id);
+            entity.Property(d => d.Name).IsRequired().HasMaxLength(255);
+            entity.Property(d => d.Description).HasMaxLength(500);
+            entity.Property(d => d.IsActive).HasDefaultValue(true);
+            entity.HasIndex(d => d.Name).IsUnique();
+        });
 
         #endregion
     }

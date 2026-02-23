@@ -46,6 +46,7 @@ public class VisitService
                 UserId = createdByUserId,
                 NamePersonToVisit = request.NamePersonToVisit,
                 Department = request.Department,
+                DepartmentId = request.DepartmentId,
                 Building = request.Building,
                 Floor = request.Floor,
                 Reason = request.Reason,
@@ -251,22 +252,20 @@ public class VisitService
             var weekStart = today.AddDays(-(int)today.DayOfWeek);
             var weekEnd = today.AddDays(1).AddTicks(-1);
 
-            // Ejecutar todas las consultas COUNT en paralelo
-            var todayTask = _visitRepository.CountTodayVisitsAsync(missionOnly: null);
-            var weekTask = _visitRepository.CountVisitsByDateRangeAsync(weekStart, weekEnd, missionOnly: null);
-            var activeTask = _visitRepository.CountActiveVisitsAsync(missionOnly: null);
-
-            await Task.WhenAll(todayTask, weekTask, activeTask);
+            // Ejecutar consultas COUNT secuencialmente (DbContext no es thread-safe)
+            var todayVisits = await _visitRepository.CountTodayVisitsAsync(missionOnly: null);
+            var weekVisits = await _visitRepository.CountVisitsByDateRangeAsync(weekStart, weekEnd, missionOnly: null);
+            var activeVisits = await _visitRepository.CountActiveVisitsAsync(missionOnly: null);
 
             // Calcular promedio diario de la semana
             var daysInWeek = (today - weekStart).Days + 1;
-            var dailyAverage = daysInWeek > 0 ? weekTask.Result / daysInWeek : 0;
+            var dailyAverage = daysInWeek > 0 ? weekVisits / daysInWeek : 0;
 
             return new DashboardStatsDto
             {
-                TodayVisits = todayTask.Result,
-                WeekVisits = weekTask.Result,
-                ActiveVisits = activeTask.Result,
+                TodayVisits = todayVisits,
+                WeekVisits = weekVisits,
+                ActiveVisits = activeVisits,
                 DailyAverage = dailyAverage
             };
         }
@@ -290,21 +289,19 @@ public class VisitService
             var weekStart = today.AddDays(-(int)today.DayOfWeek);
             var weekEnd = today.AddDays(1).AddTicks(-1);
 
-            // Ejecutar todas las consultas COUNT en paralelo
-            var todayTask = _visitRepository.CountTodayVisitsAsync(missionOnly: true);
-            var weekTask = _visitRepository.CountVisitsByDateRangeAsync(weekStart, weekEnd, missionOnly: true);
-            var activeTask = _visitRepository.CountActiveVisitsAsync(missionOnly: true);
-
-            await Task.WhenAll(todayTask, weekTask, activeTask);
+            // Ejecutar consultas COUNT secuencialmente (DbContext no es thread-safe)
+            var todayVisits = await _visitRepository.CountTodayVisitsAsync(missionOnly: true);
+            var weekVisits = await _visitRepository.CountVisitsByDateRangeAsync(weekStart, weekEnd, missionOnly: true);
+            var activeVisits = await _visitRepository.CountActiveVisitsAsync(missionOnly: true);
 
             var daysInWeek = (today - weekStart).Days + 1;
-            var dailyAverage = daysInWeek > 0 ? weekTask.Result / daysInWeek : 0;
+            var dailyAverage = daysInWeek > 0 ? weekVisits / daysInWeek : 0;
 
             return new DashboardStatsDto
             {
-                TodayVisits = todayTask.Result,
-                WeekVisits = weekTask.Result,
-                ActiveVisits = activeTask.Result,
+                TodayVisits = todayVisits,
+                WeekVisits = weekVisits,
+                ActiveVisits = activeVisits,
                 DailyAverage = dailyAverage
             };
         }

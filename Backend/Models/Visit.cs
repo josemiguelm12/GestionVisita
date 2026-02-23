@@ -11,14 +11,14 @@ namespace GestionVisitaAPI.Models;
 [Table("visits")]
 public class Visit : BaseEntity
 {
-    // FK: Usuario que creó la visita
+    // FK: Usuario que creï¿½ la visita
     [Required]
     public int UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
     public virtual User? Creator { get; set; }
 
-    // FK: Usuario que cerró la visita (nullable)
+    // FK: Usuario que cerrï¿½ la visita (nullable)
     public int? ClosedBy { get; set; }
 
     [ForeignKey(nameof(ClosedBy))]
@@ -31,6 +31,12 @@ public class Visit : BaseEntity
     [Required]
     [MaxLength(255)]
     public string Department { get; set; } = string.Empty;
+
+    // FK: Departamento
+    public int? DepartmentId { get; set; }
+
+    [ForeignKey(nameof(DepartmentId))]
+    public virtual Department? DepartmentEntity { get; set; }
 
     public int? Building { get; set; }
 
@@ -61,22 +67,22 @@ public class Visit : BaseEntity
 
     public bool SendEmail { get; set; } = false;
 
-    // Navegación: Relación muchos a muchos con Visitor
+    // Navegaciï¿½n: Relaciï¿½n muchos a muchos con Visitor
     public virtual ICollection<Visitor> Visitors { get; set; } = new List<Visitor>();
 
-    // Navegación: Tabla pivot con información adicional
+    // Navegaciï¿½n: Tabla pivot con informaciï¿½n adicional
     public virtual ICollection<VisitVisitor> VisitVisitors { get; set; } = new List<VisitVisitor>();
 
     #region Computed Properties
 
     /// <summary>
-    /// Verifica si la visita está activa (abierta)
+    /// Verifica si la visita estï¿½ activa (abierta)
     /// </summary>
     [NotMapped]
     public bool IsActive => StatusId == (int)Enums.VisitStatus.Abierto;
 
     /// <summary>
-    /// Obtiene la duración de la visita (si está cerrada)
+    /// Obtiene la duraciï¿½n de la visita (si estï¿½ cerrada)
     /// </summary>
     [NotMapped]
     public TimeSpan? Duration

@@ -11,6 +11,8 @@ public class CreateVisitRequestDto
     [Required]
     [MaxLength(255)]
     public string Department { get; set; } = string.Empty;
+
+    public int? DepartmentId { get; set; }
     
     public int? Building { get; set; }
     
@@ -22,7 +24,7 @@ public class CreateVisitRequestDto
     public bool MissionCase { get; set; } = false;
     
     [MaxLength(20)]
-    [RegularExpression(@"^[A-Za-z0-9\-]+$", ErrorMessage = "Placa inválida")]
+    [RegularExpression(@"^[A-Za-z0-9\-]+$", ErrorMessage = "Placa invï¿½lida")]
     public string? VehiclePlate { get; set; }
     
     [EmailAddress]
@@ -69,6 +71,8 @@ public class VisitResponseDto
     public int Id { get; set; }
     public string NamePersonToVisit { get; set; } = string.Empty;
     public string Department { get; set; } = string.Empty;
+    public int? DepartmentId { get; set; }
+    public string? DepartmentName { get; set; }
     public int? Building { get; set; }
     public int? Floor { get; set; }
     public string? Reason { get; set; }

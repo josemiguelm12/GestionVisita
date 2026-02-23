@@ -17,3 +17,9 @@ export interface VisitsByDate {
   date: string;
   count: number;
 }
+
+export interface DepartmentStats {
+  department: string;
+  visits: number;
+  percentage: number;
+}

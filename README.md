@@ -21,42 +21,42 @@
 
 ---
 
-## 🚀 Características Principales
+##  Características Principales
 
-### 🔐 Seguridad
-- ✅ Autenticación JWT con claims personalizados
-- ✅ Autorización basada en roles
-- ✅ Audit trail completo de acciones
-- ✅ IP tracking y user agent logging
-- ✅ Security headers middleware
+### Seguridad
+- Autenticación JWT con claims personalizados
+- Autorización basada en roles
+- Audit trail completo de acciones
+- IP tracking y user agent logging
+- Security headers middleware
 
-### 📊 Funcionalidades
-- ✅ CRUD completo de visitas y visitantes
-- ✅ Dashboard con estadísticas en tiempo real
-- ✅ Búsqueda y filtros avanzados
-- ✅ Paginación server-side
-- ✅ Gestión de carnets y vehículos
-- ✅ Clasificación misional/no misional
-- ✅ Soft delete para trazabilidad
+### Funcionalidades
+- CRUD completo de visitas y visitantes
+- Dashboard con estadísticas en tiempo real
+- Búsqueda y filtros avanzados
+- Paginación server-side
+- Gestión de carnets y vehículos
+- Clasificación misional/no misional
+- Soft delete para trazabilidad
 
-### 🏗️ Arquitectura
-- ✅ Clean Architecture
-- ✅ Repository Pattern
-- ✅ Dependency Injection
-- ✅ DTOs para transferencia de datos
-- ✅ Custom Middlewares (5 diferentes)
-- ✅ Exception Handling global
+### Arquitectura
+- Clean Architecture
+- Repository Pattern
+- Dependency Injection
+- DTOs para transferencia de datos
+- Custom Middlewares (5 diferentes)
+- Exception Handling global
 
-### ⚡ Performance & Monitoreo
-- ✅ Caché distribuido (Redis + InMemory fallback)
-- ✅ Logging estructurado con Serilog
-- ✅ Performance monitoring middleware
-- ✅ Azure Application Insights (producción)
-- ✅ Retry logic con Polly
+### Performance & Monitoreo
+- Caché distribuido (Redis + InMemory fallback)
+- Logging estructurado con Serilog
+- Performance monitoring middleware
+- Azure Application Insights (producción)
+- Retry logic con Polly
 
 ---
 
-## 🛠️ Stack Tecnológico
+## Stack Tecnológico
 
 ### Backend
 | Tecnología | Versión | Propósito |
@@ -80,7 +80,7 @@
 
 ---
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 GestionVisita/
@@ -107,7 +107,7 @@ GestionVisita/
 │   │   └── types/            # TypeScript types
 │   └── public/
 │
-├── Simulador/                # 🤖 Bot de simulación de tráfico
+├── Simulador/                #  Bot de simulación de tráfico
 │   ├── src/
 │   │   ├── config/           # Configuración
 │   │   ├── types/            # TypeScript definitions
@@ -130,12 +130,12 @@ El proyecto incluye un **simulador de tráfico realista** para generar datos his
 ### ¿Qué hace?
 
 Simula el comportamiento de una recepción empresarial real:
-- ✅ Llegadas de visitantes durante horario laboral (8 AM - 6 PM)
-- ✅ Grupos de 1-4 personas
-- ✅ Datos dominicanos realistas (nombres, cédulas, placas)
-- ✅ Patrones de carga variable (picos en mañana, baja a mediodía)
-- ✅ Duración de visitas con distribución normal (5-180 min)
-- ✅ 5% de visitas olvidan cerrarse (comportamiento realista)
+- Llegadas de visitantes durante horario laboral (8 AM - 6 PM)
+- Grupos de 1-4 personas
+- Datos dominicanos realistas (nombres, cédulas, placas)
+- Patrones de carga variable (picos en mañana, baja a mediodía)
+- Duración de visitas con distribución normal (5-180 min)
+- 5% de visitas olvidan cerrarse (comportamiento realista)
 
 ### Stack Técnico
 
@@ -172,7 +172,7 @@ App Service → WebJobs → Add
 - Scale: Single Instance
 ```
 
-📚 **Ver guía completa**: [`simulador/DEPLOYMENT.md`](simulador/DEPLOYMENT.md)
+ **Ver guía completa**: [`simulador/DEPLOYMENT.md`](simulador/DEPLOYMENT.md)
 
 ### Configuración
 
@@ -197,7 +197,7 @@ Suficiente para dashboards y reportes con datos significativos.
 
 ---
 
-## 🚦 Requisitos Previos
+##  Requisitos Previos
 
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [Node.js 18+](https://nodejs.org/) y npm/yarn
@@ -206,15 +206,15 @@ Suficiente para dashboards y reportes con datos significativos.
 
 ---
 
-## ⚙️ Instalación y Configuración
+##  Instalación y Configuración
 
-### 1️⃣ Clonar el Repositorio
+### 1️ Clonar el Repositorio
 ```bash
 git clone https://github.com/tuusuario/GestionVisita.git
 cd GestionVisita
 ```
 
-### 2️⃣ Configurar Backend
+### 2️ Configurar Backend
 
 #### a) Restaurar dependencias
 ```bash
@@ -256,7 +256,7 @@ dotnet run
 # API disponible en: https://localhost:7001
 ```
 
-### 3️⃣ Configurar Frontend
+### 3️ Configurar Frontend
 
 #### a) Instalar dependencias
 ```bash
@@ -282,7 +282,7 @@ yarn dev
 
 ---
 
-## 🔑 Usuarios por Defecto
+##  Usuarios por Defecto
 
 ```javascript
 // Administrador
@@ -296,7 +296,7 @@ Password: Recepcion123!
 
 ---
 
-## 📡 Endpoints Principales
+##  Endpoints Principales
 
 ### Autenticación
 ```http
@@ -328,7 +328,7 @@ PUT    /api/visitor/{id}              # Actualizar visitante
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ```bash
 # Backend
@@ -342,7 +342,7 @@ npm run test
 
 ---
 
-## 🏭 Despliegue en Producción
+##  Despliegue en Producción
 
 ### Configuraciones Adicionales
 
@@ -372,7 +372,7 @@ npm run build
 
 ---
 
-## 📊 Middlewares Personalizados
+##  Middlewares Personalizados
 
 | Middleware | Función | Orden |
 |-----------|---------|-------|
@@ -384,18 +384,18 @@ npm run build
 
 ---
 
-## 🔍 Características de Seguridad
+##  Características de Seguridad
 
-- 🔐 **JWT Authentication**: Tokens firmados con HS256
-- 🛡️ **CORS**: Orígenes permitidos configurables
-- 📝 **Audit Logging**: Registro de todas las acciones críticas
-- 🚫 **Exception Handling**: Sin exposición de stack traces
-- 🔒 **Security Headers**: HSTS, XSS Protection, etc.
-- 📍 **IP Tracking**: Registro de IPs en autenticación
+-  **JWT Authentication**: Tokens firmados con HS256
+-  **CORS**: Orígenes permitidos configurables
+-  **Audit Logging**: Registro de todas las acciones críticas
+-  **Exception Handling**: Sin exposición de stack traces
+-  **Security Headers**: HSTS, XSS Protection, etc.
+-  **IP Tracking**: Registro de IPs en autenticación
 
 ---
 
-## 📈 Monitoreo y Logging
+##  Monitoreo y Logging
 
 ### Logs disponibles:
 ```
@@ -421,7 +421,7 @@ Backend/Logs/
 
 ---
 
-## 🤝 Contribuciones
+##  Contribuciones
 
 Las contribuciones son bienvenidas. Por favor:
 
@@ -433,57 +433,34 @@ Las contribuciones son bienvenidas. Por favor:
 
 ---
 
-## 📝 Licencia
+##  Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver [LICENSE](LICENSE) para más detalles.
 
 ---
 
-## 👨‍💻 Autor
+##  Autor
 
 **Jose Miguel Moquete Sierra**
 
-- 📧 Email: josemiguelmoquete2@gmail.com
-- 💼 LinkedIn: [linkedin.com/in/tuusuario](https://linkedin.com/in/tuusuario)
-- 🌐 Portfolio: [tuportfolio.com](https://tuportfolio.com)
-- 📱 WhatsApp: (829) 945-2220
+-  Email: josemiguelmoquete2@gmail.com
+-  LinkedIn: [linkedin.com/in/tuusuario](https://linkedin.com/in/tuusuario)
+-  Portfolio: [tuportfolio.com](https://tuportfolio.com)
+-  WhatsApp: (829) 945-2220
 
 ---
 
-## 🙏 Agradecimientos
-
-- Instituto Tecnológico de Las Américas (ITLA)
-- Consejo Nacional para la Niñez y la Adolescencia (CONANI)
-- Comunidad de desarrolladores .NET y React
-
----
-
-## 📚 Recursos Adicionales
+##  Recursos Adicionales
 
 - [Documentación ASP.NET Core](https://docs.microsoft.com/aspnet/core)
 - [Documentación React](https://react.dev/)
 - [Entity Framework Core](https://docs.microsoft.com/ef/core)
 - [JWT Best Practices](https://tools.ietf.org/html/rfc8725)
 
----
 
-## 🔄 Roadmap
 
-- [ ] Implementar SSO con Microsoft 365
-- [ ] Agregar exportación a PDF/Excel
-- [ ] Notificaciones push en tiempo real
-- [ ] Dashboard con gráficos interactivos
-- [ ] App móvil (React Native)
-- [ ] Tests automatizados (>80% cobertura)
-- [ ] Docker Compose para desarrollo
-- [ ] CI/CD con GitHub Actions
+** Si este proyecto te fue útil, considera darle una estrella **
 
----
-
-<div align="center">
-
-**⭐ Si este proyecto te fue útil, considera darle una estrella ⭐**
-
-Desarrollado con ❤️ por Jose Miguel Moquete Sierra
+Desarrollado con  por Jose Miguel Moquete Sierra
 
 </div>

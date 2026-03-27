@@ -1,4 +1,4 @@
-# 🏢 Sistema de Gestión de Visitas Institucionales
+# Sistema de Gestión de Visitas Institucionales
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://reactjs.org/)
@@ -10,7 +10,7 @@
 
 ---
 
-## 📸 Vista Previa
+##  Vista Previa
 
 <!-- TODO: Agregar screenshots -->
 ```

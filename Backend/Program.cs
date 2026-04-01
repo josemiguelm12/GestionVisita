@@ -28,9 +28,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString, sqlServerOptions =>
+    options.UseNpgsql(connectionString, npgsqlOptions =>
     {
-        sqlServerOptions.EnableRetryOnFailure(5);
+        npgsqlOptions.EnableRetryOnFailure(5);
     }));
 
 #endregion
@@ -38,7 +38,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 #region Configuración de CORS
 
 var corsOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>()
-    ?? new[] { "http://localhost:3000", "http://localhost:5173" };
+    ?? new[] { "http://localhost:3000", "http://localhost:5173", "http://localhost:5174" };
 
 builder.Services.AddCors(options =>
 {

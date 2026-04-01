@@ -19,7 +19,7 @@ const VisitFormModal: React.FC<VisitFormModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title="Nueva Visita"
-      size="xl"
+      size="lg"
     >
       <VisitForm onSubmit={onSubmit} onCancel={onClose} />
     </Modal>

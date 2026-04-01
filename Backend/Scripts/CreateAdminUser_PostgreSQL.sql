@@ -15,7 +15,7 @@ INSERT INTO users ("Name", "Email", "Password", "IsActive", "CreatedAt", "Update
 VALUES (
     'Administrador Sistema',
     'admin@gestionvisitas.com',
-    'ZfVVLxvb8bJ8PYthRNJILsoxL5PsgUEO6zYQPKxpfFtPSvE/uQNEIJHhPAy4UqTfT1YGzn6qiLN1xGlMNkjZsw==',
+    'BcW5EPC2wTZ3Nil2M92AC5GyN1OHsZWfeZehY+RSKY+XiNCO2k1pm6utm22wLmtVwsH7XfvRXvAu3L7zSEsNBw==',
     true,
     NOW(),
     NOW()

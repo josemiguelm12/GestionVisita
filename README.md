@@ -34,6 +34,7 @@
 ---
 
 ##  Características Principales
+##  Características Principales
 
 ###  Seguridad
 - Autenticación JWT con claims personalizados (HS256)
@@ -122,6 +123,7 @@
 
 ---
 
+## Estructura del Proyecto
 ## Estructura del Proyecto
 
 ```
@@ -1002,6 +1004,7 @@ npm run dev
 ---
 
 ##  Despliegue en Producción
+##  Despliegue en Producción
 
 ### Backend — Azure App Service
 
@@ -1092,6 +1095,10 @@ cd simulador
 
 **Jose Miguel Moquete Sierra**
 
+-  Email: josemiguelmoquete2@gmail.com
+-  LinkedIn: [linkedin.com/in/tuusuario](https://linkedin.com/in/tuusuario)
+-  Portfolio: [tuportfolio.com](https://tuportfolio.com)
+-  WhatsApp: (829) 945-2220
 -  Email: josemiguelmoquete2@gmail.com
 -  LinkedIn: [linkedin.com/in/tuusuario](https://linkedin.com/in/tuusuario)
 -  Portfolio: [tuportfolio.com](https://tuportfolio.com)

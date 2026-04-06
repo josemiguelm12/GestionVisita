@@ -3,10 +3,13 @@ import { FileDown, Calendar, Filter, Download } from 'lucide-react';
 import { visitApi } from '../api/visitApi';
 import type { Visit } from '../types/visit.types';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import Pagination from '../components/common/Pagination';
 import { useTheme } from '../context/ThemeContext';
 import toast from 'react-hot-toast';
 
-type ReportType = 'visits' | 'visitors' | 'active' | 'closed';
+type ReportType = 'visits' | 'active' | 'closed';
+
+const PAGE_SIZE = 10;
 
 const Reports: React.FC = () => {
   const { theme } = useTheme();
@@ -15,49 +18,44 @@ const Reports: React.FC = () => {
   const [endDate, setEndDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [reportData, setReportData] = useState<Visit[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  // Guardamos los filtros activos para usarlos al cambiar página
+  const [activeFilters, setActiveFilters] = useState<{ dateFrom: string; dateTo: string; statusId?: number } | null>(null);
+
+  const fetchPage = async (page: number, dateFrom: string, dateTo: string, statusId?: number) => {
+    setLoading(true);
+    try {
+      const res = await visitApi.getReport(page, PAGE_SIZE, dateFrom, dateTo, statusId);
+      setReportData(res.data);
+      setTotalPages(res.pagination.last_page);
+      setTotalItems(res.pagination.total);
+      setCurrentPage(page);
+    } catch (error) {
+      toast.error('Error al generar reporte');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const generateReport = async () => {
-  if (!startDate || !endDate) {
-    toast.error('Debe seleccionar fecha de inicio y fin');
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    const response = await visitApi.getAll();
-    const data: Visit[] = response.data;
-
-    const filtered = data.filter((visit: Visit) => {
-      const visitDate = new Date(visit.createdAt);
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      end.setHours(23, 59, 59, 999);
-      return visitDate >= start && visitDate <= end;
-    });
-
-    let finalData = filtered;
-
-    if (reportType === 'active') {
-      finalData = filtered.filter(
-        (v: Visit) => v.statusName === 'Abierto'
-      );
-    } else if (reportType === 'closed') {
-      finalData = filtered.filter(
-        (v: Visit) => v.statusName === 'Cerrado'
-      );
+    if (!startDate || !endDate) {
+      toast.error('Debe seleccionar fecha de inicio y fin');
+      return;
     }
+    const statusId = reportType === 'active' ? 1 : reportType === 'closed' ? 2 : undefined;
+    const filters = { dateFrom: startDate, dateTo: endDate, statusId };
+    setActiveFilters(filters);
+    await fetchPage(1, startDate, endDate, statusId);
+    toast.success('Reporte generado');
+  };
 
-    setReportData(finalData);
-    toast.success(`Reporte generado: ${finalData.length} registros`);
-
-  } catch (error) {
-    toast.error('Error al generar reporte');
-    console.error(error);
-  } finally {
-    setLoading(false);
-  }
-};
+  const handlePageChange = (page: number) => {
+    if (!activeFilters) return;
+    fetchPage(page, activeFilters.dateFrom, activeFilters.dateTo, activeFilters.statusId);
+  };
 
   const exportToCSV = () => {
     if (reportData.length === 0) {
@@ -217,7 +215,7 @@ const Reports: React.FC = () => {
             <h3 className={`font-semibold ${
               theme === 'dark' ? 'text-white' : 'text-gray-900'
             }`}>
-              Resultados ({reportData.length} registros)
+              Resultados ({totalItems} registros)
             </h3>
             <button
               onClick={exportToCSV}
@@ -294,6 +292,19 @@ const Reports: React.FC = () => {
               </tbody>
             </table>
           </div>
+          {totalPages > 1 && (
+            <div className={`px-6 py-3 border-t ${
+              theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
+            }`}>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                pageSize={PAGE_SIZE}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
         </div>
       )}
 

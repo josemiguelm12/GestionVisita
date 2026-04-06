@@ -15,6 +15,13 @@ export const visitApi = {
     return response.data;
   },
 
+  getReport: async (page: number, perPage: number, dateFrom: string, dateTo: string, statusId?: number): Promise<VisitsApiResponse> => {
+    const params: Record<string, string | number> = { page, per_page: perPage, date_from: dateFrom, date_to: dateTo };
+    if (statusId !== undefined) params.status_id = statusId;
+    const response = await api.get<VisitsApiResponse>('/visit', { params });
+    return response.data;
+  },
+
   getById: async (id: number): Promise<Visit> => {
     const response = await api.get<{ data: Visit }>(`/visit/${id}`);
     return response.data.data;

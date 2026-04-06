@@ -262,14 +262,16 @@ public class VisitRepository : Repository<Visit>, IVisitRepository
                 case "date_from":
                     if (filter.Value is DateTime dateFrom)
                     {
-                        query = query.Where(v => v.CreatedAt >= dateFrom);
+                        var dateFromUtc = DateTime.SpecifyKind(dateFrom.Date, DateTimeKind.Utc);
+                        query = query.Where(v => v.CreatedAt >= dateFromUtc);
                     }
                     break;
 
                 case "date_to":
                     if (filter.Value is DateTime dateTo)
                     {
-                        query = query.Where(v => v.CreatedAt <= dateTo);
+                        var dateToEnd = DateTime.SpecifyKind(dateTo.Date.AddDays(1).AddTicks(-1), DateTimeKind.Utc);
+                        query = query.Where(v => v.CreatedAt <= dateToEnd);
                     }
                     break;
 

@@ -1,38 +1,50 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { visitApi } from '../../api/visitApi';
 import type { Visit } from '../../types/visit.types';
+import Pagination from '../common/Pagination';
+
+const PAGE_SIZE = 10;
+const ACTIVE_STATUS_ID = 1;
 
 const ActiveVisitsTable: React.FC = () => {
   const { theme } = useTheme();
   const [visits, setVisits] = useState<Visit[]>([]);
   const [loading, setLoading] = useState(true);
   const [closingId, setClosingId] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+
+  const load = useCallback(async (page: number) => {
+    try {
+      const res = await visitApi.getPaged(page, PAGE_SIZE, undefined, ACTIVE_STATUS_ID);
+      setVisits(res.data);
+      setTotalPages(res.pagination.last_page);
+      setTotal(res.pagination.total);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     let mounted = true;
-    const load = async () => {
-      try {
-        const data = await visitApi.getActive();
-        if (mounted) setVisits(data);
-      } finally {
-        if (mounted) setLoading(false);
-      }
+    const refresh = async () => {
+      if (!mounted) return;
+      await load(currentPage);
     };
-    load();
-    const interval = setInterval(load, 30000);
+    refresh();
+    const interval = setInterval(refresh, 30000);
     return () => { mounted = false; clearInterval(interval); };
-  }, []);
+  }, [currentPage, load]);
 
   const handleClose = async (visitId: number) => {
     if (!confirm('¿Registrar salida de esta visita?')) return;
-    
+
     setClosingId(visitId);
     try {
       await visitApi.close(visitId);
-      // Recargar la lista
-      const data = await visitApi.getActive();
-      setVisits(data);
+      await load(currentPage);
     } catch (error) {
       console.error('Error al cerrar visita:', error);
       alert('Error al registrar la salida');
@@ -51,10 +63,11 @@ const ActiveVisitsTable: React.FC = () => {
     <div className={`rounded-3xl border overflow-hidden ${
       theme === 'dark' ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'
     }`}>
-      <div className={`p-6 border-b ${
+      <div className={`p-6 border-b flex items-center justify-between ${
         theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
       }`}>
         <h3 className={`text-lg font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Visitas activas</h3>
+        {!loading && <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>{total} visitas</span>}
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
@@ -111,6 +124,11 @@ const ActiveVisitsTable: React.FC = () => {
           </tbody>
         </table>
       </div>
+      {totalPages > 1 && (
+        <div className={`px-6 py-3 border-t ${theme === 'dark' ? 'border-slate-700' : 'border-gray-200'}`}>
+          <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={total} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
+        </div>
+      )}
     </div>
   );
 };

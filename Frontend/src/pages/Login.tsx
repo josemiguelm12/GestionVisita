@@ -77,7 +77,7 @@ const Login: React.FC = () => {
           />
         </div>
         
-        <div className="mt-8 flex w-full items-center justify-between">
+        {/* <div className="mt-8 flex w-full items-center justify-between">
           <label className="flex cursor-pointer items-center gap-2">
             <input 
               type="checkbox" 
@@ -95,7 +95,7 @@ const Login: React.FC = () => {
           <a className="text-gray-800 underline hover:text-gray-600 transition" href="#">
             ¿Olvidaste tu contraseña?
           </a>
-        </div>
+        </div> */}
         
         <button 
           type="submit" 
@@ -105,12 +105,12 @@ const Login: React.FC = () => {
           {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
         </button>
         
-        <p className="mt-4 text-gray-500/90">
+        {/* <p className="mt-4 text-gray-500/90">
           ¿No tienes una cuenta?{' '}
           <a className="text-gray-800 underline hover:text-gray-600 transition" href="#">
             Regístrate
           </a>
-        </p>
+        </p> */}
       </form>
     </main>
   );

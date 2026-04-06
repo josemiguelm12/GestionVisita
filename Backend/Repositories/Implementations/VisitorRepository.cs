@@ -24,6 +24,32 @@ public class VisitorRepository : Repository<Visitor>, IVisitorRepository
             .ToListAsync();
     }
 
+    public async Task<(IEnumerable<Visitor> Items, int Total)> GetPagedAsync(int page, int pageSize, string? search = null)
+    {
+        var query = _dbSet.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.ToLower();
+            query = query.Where(v =>
+                v.Name.ToLower().Contains(term) ||
+                v.LastName.ToLower().Contains(term) ||
+                (v.IdentityDocument != null && v.IdentityDocument.ToLower().Contains(term)) ||
+                (v.Email != null && v.Email.ToLower().Contains(term)) ||
+                (v.Institution != null && v.Institution.ToLower().Contains(term))
+            );
+        }
+
+        var total = await query.CountAsync();
+        var items = await query
+            .OrderByDescending(v => v.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, total);
+    }
+
     public async Task<Visitor?> GetByIdentityDocumentAsync(string identityDocument)
     {
         return await _dbSet

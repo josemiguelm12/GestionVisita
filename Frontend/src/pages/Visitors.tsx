@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Plus } from 'lucide-react';
 import { visitorApi } from '../api/visitorApi';
 import type { Visitor, CreateVisitorRequest } from '../types/visitor.types';
@@ -7,55 +7,53 @@ import VisitorFormModal from '../components/visitors/VisitorFormModal';
 import SearchBar from '../components/common/SearchBar';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import Pagination from '../components/common/Pagination';
 import { useTheme } from '../context/ThemeContext';
 import { usePermissions } from '../hooks/usePermissions';
 import toast from 'react-hot-toast';
+
+const PAGE_SIZE = 10;
 
 const Visitors: React.FC = () => {
   const { theme } = useTheme();
   const { canCreateVisitors, canEditVisitors, canDeleteVisitors } = usePermissions();
   const [visitors, setVisitors] = useState<Visitor[]>([]);
-  const [filteredVisitors, setFilteredVisitors] = useState<Visitor[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVisitor, setSelectedVisitor] = useState<Visitor | null>(null);
   const [visitorToDelete, setVisitorToDelete] = useState<Visitor | null>(null);
 
-  useEffect(() => {
-    loadVisitors();
-  }, []);
-
-  const loadVisitors = async () => {
+  const loadVisitors = useCallback(async (page: number, search: string) => {
     try {
       setLoading(true);
-      const data = await visitorApi.getAll();
-      setVisitors(data);
-      setFilteredVisitors(data);
+      const result = await visitorApi.getPaged(page, PAGE_SIZE, search);
+      setVisitors(result.data);
+      setTotalItems(result.total);
+      setTotalPages(result.totalPages);
     } catch (error) {
       toast.error('Error al cargar visitantes');
       console.error(error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const handleSearch = (query: string) => {
-    if (!query.trim()) {
-      setFilteredVisitors(visitors);
-      return;
-    }
+  useEffect(() => {
+    loadVisitors(currentPage, searchQuery);
+  }, [currentPage, searchQuery, loadVisitors]);
 
-    const lowerQuery = query.toLowerCase();
-    const filtered = visitors.filter(
-      (v) =>
-        v.name.toLowerCase().includes(lowerQuery) ||
-        v.lastName.toLowerCase().includes(lowerQuery) ||
-        v.identityDocument?.toLowerCase().includes(lowerQuery) ||
-        v.email?.toLowerCase().includes(lowerQuery) ||
-        v.institution?.toLowerCase().includes(lowerQuery)
-    );
-    setFilteredVisitors(filtered);
-  };
+  const handleSearch = useCallback((query: string) => {
+    setCurrentPage(1);
+    setSearchQuery(query);
+  }, []);
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
 
   const handleCreate = () => {
     setSelectedVisitor(null);
@@ -68,7 +66,6 @@ const Visitors: React.FC = () => {
   };
 
   const handleView = (visitor: Visitor) => {
-    // TODO: Implementar vista de detalles
     toast.success(`Ver detalles de ${visitor.name} ${visitor.lastName}`);
   };
 
@@ -83,7 +80,7 @@ const Visitors: React.FC = () => {
       await visitorApi.delete(visitorToDelete.id);
       toast.success('Visitante eliminado exitosamente');
       setVisitorToDelete(null);
-      loadVisitors();
+      loadVisitors(currentPage, searchQuery);
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Error al eliminar visitante');
     }
@@ -100,20 +97,12 @@ const Visitors: React.FC = () => {
       }
       setIsModalOpen(false);
       setSelectedVisitor(null);
-      loadVisitors();
+      loadVisitors(currentPage, searchQuery);
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Error al guardar visitante');
       throw error;
     }
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-8 pb-8">
@@ -146,11 +135,24 @@ const Visitors: React.FC = () => {
           ? 'bg-slate-800 border-slate-700'
           : 'bg-white border-gray-200'
       }`}>
-        <VisitorTable
-          visitors={filteredVisitors}
-          onEdit={canEditVisitors ? handleEdit : undefined}
-          onDelete={canDeleteVisitors ? handleDelete : undefined}
-          onView={handleView}
+        {loading ? (
+          <div className="flex items-center justify-center min-h-[300px]">
+            <LoadingSpinner size="lg" />
+          </div>
+        ) : (
+          <VisitorTable
+            visitors={visitors}
+            onEdit={canEditVisitors ? handleEdit : undefined}
+            onDelete={canDeleteVisitors ? handleDelete : undefined}
+            onView={handleView}
+          />
+        )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          pageSize={PAGE_SIZE}
+          onPageChange={handlePageChange}
         />
       </div>
 
@@ -179,3 +181,4 @@ const Visitors: React.FC = () => {
 };
 
 export default Visitors;
+

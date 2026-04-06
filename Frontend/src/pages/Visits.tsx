@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Plus } from 'lucide-react';
 import { visitApi } from '../api/visitApi';
 import type { Visit, CreateVisitRequest } from '../types/visit.types';
@@ -7,71 +7,59 @@ import VisitFormModal from '../components/visits/VisitFormModal';
 import SearchBar from '../components/common/SearchBar';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import Pagination from '../components/common/Pagination';
 import { useTheme } from '../context/ThemeContext';
 import { usePermissions } from '../hooks/usePermissions';
 import toast from 'react-hot-toast';
+
+const PAGE_SIZE = 10;
+
+const STATUS_MAP: Record<string, number | undefined> = {
+  all: undefined,
+  active: 1,
+  closed: 2,
+};
 
 const Visits: React.FC = () => {
   const { theme } = useTheme();
   const { canCreateVisits, canCloseVisits } = usePermissions();
   const [visits, setVisits] = useState<Visit[]>([]);
-  const [filteredVisits, setFilteredVisits] = useState<Visit[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visitToClose, setVisitToClose] = useState<Visit | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
 
-  useEffect(() => {
-    loadVisits();
+  const loadVisits = useCallback(async (page: number, query: string, status: string) => {
+    try {
+      setLoading(true);
+      const response = await visitApi.getPaged(page, PAGE_SIZE, query || undefined, STATUS_MAP[status]);
+      setVisits(response.data);
+      setTotalItems(response.pagination.total);
+    } catch (error) {
+      toast.error('Error al cargar visitas');
+      console.error(error);
+      setVisits([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
-    applyFilters();
-  }, [visits, filterStatus]);
+    loadVisits(currentPage, search, filterStatus);
+  }, [currentPage, search, filterStatus, loadVisits]);
 
-  const loadVisits = async () => {
-  try {
-    setLoading(true);
-    const response = await visitApi.getAll();
-    setVisits(response.data);
-  } catch (error) {
-    toast.error('Error al cargar visitas');
-    console.error(error);
-    setVisits([]);
-  } finally {
-    setLoading(false);
-  }
-};
+  const handleSearch = useCallback((query: string) => {
+    setSearch(query);
+    setCurrentPage(1);
+  }, []);
 
-
-  const applyFilters = () => {
-    let filtered = [...visits];
-
-    if (filterStatus === 'active') {
-  filtered = filtered.filter((v) => v.statusName === 'Abierto');
-} else if (filterStatus === 'closed') {
-  filtered = filtered.filter((v) => v.statusName === 'Cerrado');
-}
-
-    setFilteredVisits(filtered);
-  };
-
-  const handleSearch = (query: string) => {
-    if (!query.trim()) {
-      applyFilters();
-      return;
-    }
-
-    const lowerQuery = query.toLowerCase();
-    const filtered = visits.filter(
-      (v) =>
-        v.namePersonToVisit?.toLowerCase().includes(lowerQuery) ||
-        v.department?.toLowerCase().includes(lowerQuery) ||
-        (Array.isArray(v.visitors) && v.visitors.some((visitor) =>
-          `${visitor.name} ${visitor.lastName}`.toLowerCase().includes(lowerQuery)
-        ))
-    );
-    setFilteredVisits(filtered);
+  const handleFilterStatus = (status: string) => {
+    setFilterStatus(status);
+    setCurrentPage(1);
   };
 
   const handleCreate = () => {
@@ -83,7 +71,7 @@ const Visits: React.FC = () => {
       await visitApi.create(data);
       toast.success('Visita registrada exitosamente');
       setIsModalOpen(false);
-      loadVisits();
+      loadVisits(currentPage, search, filterStatus);
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Error al crear visita');
       throw error;
@@ -101,22 +89,11 @@ const Visits: React.FC = () => {
       await visitApi.close(visitToClose.id);
       toast.success('Visita cerrada exitosamente');
       setVisitToClose(null);
-      loadVisits();
+      loadVisits(currentPage, search, filterStatus);
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Error al cerrar visita');
     }
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
-
-const activeCount = visits.filter((v) => v.statusName === 'Abierto').length;
-const closedCount = visits.filter((v) => v.statusName === 'Cerrado').length;
 
   return (
     <div className="space-y-8 pb-8">
@@ -145,7 +122,7 @@ const closedCount = visits.filter((v) => v.statusName === 'Cerrado').length;
         
         <div className="flex gap-2">
           <button
-            onClick={() => setFilterStatus('all')}
+            onClick={() => handleFilterStatus('all')}
             className={`px-5 py-2.5 rounded-full text-sm font-medium transition ${
               filterStatus === 'all'
                 ? 'bg-gradient-to-b from-gray-600 to-gray-800 text-white'
@@ -154,10 +131,10 @@ const closedCount = visits.filter((v) => v.statusName === 'Cerrado').length;
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
             }`}
           >
-            Todas ({visits.length})
+            Todas
           </button>
           <button
-            onClick={() => setFilterStatus('active')}
+            onClick={() => handleFilterStatus('active')}
             className={`px-5 py-2.5 rounded-full text-sm font-medium transition ${
               filterStatus === 'active'
                 ? 'bg-gradient-to-b from-green-600 to-green-800 text-white'
@@ -166,10 +143,10 @@ const closedCount = visits.filter((v) => v.statusName === 'Cerrado').length;
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
             }`}
           >
-            Activas ({activeCount})
+            Activas
           </button>
           <button
-            onClick={() => setFilterStatus('closed')}
+            onClick={() => handleFilterStatus('closed')}
             className={`px-5 py-2.5 rounded-full text-sm font-medium transition ${
               filterStatus === 'closed'
                 ? 'bg-gradient-to-b from-gray-600 to-gray-800 text-white'
@@ -178,7 +155,7 @@ const closedCount = visits.filter((v) => v.statusName === 'Cerrado').length;
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
             }`}
           >
-            Cerradas ({closedCount})
+            Cerradas
           </button>
         </div>
       </div>
@@ -188,7 +165,28 @@ const closedCount = visits.filter((v) => v.statusName === 'Cerrado').length;
           ? 'bg-slate-800 border-slate-700'
           : 'bg-white border-gray-200'
       }`}>
-        <VisitTable visits={filteredVisits} onClose={canCloseVisits ? handleClose : undefined} />
+        {loading ? (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <LoadingSpinner size="lg" />
+          </div>
+        ) : (
+          <>
+            <VisitTable visits={visits} onClose={canCloseVisits ? handleClose : undefined} />
+            {totalPages > 1 && (
+              <div className={`px-6 py-4 border-t ${
+                theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
+              }`}>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={totalItems}
+                  pageSize={PAGE_SIZE}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       <VisitFormModal

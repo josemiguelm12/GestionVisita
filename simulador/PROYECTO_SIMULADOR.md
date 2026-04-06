@@ -130,10 +130,10 @@ public class CreateVisitorRequest {
 ```
 
 Esto garantiza:
-- ✅ Las peticiones usan el formato exacto esperado
-- ✅ No hay errores de validación en producción
-- ✅ Type safety completo en TypeScript
-- ✅ Si el backend cambia, TypeScript lanza error (fail fast)
+-  Las peticiones usan el formato exacto esperado
+-  No hay errores de validación en producción
+-  Type safety completo en TypeScript
+-  Si el backend cambia, TypeScript lanza error (fail fast)
 
 ### Comportamiento Realista
 
@@ -474,15 +474,15 @@ class Logger {
 
   // Logs especializados
   arrival(groupSize: number): void {
-    this.info(`[ARRIVAL] 👥 Grupo de ${groupSize} visitante(s) llegó`);
+    this.info(`[ARRIVAL]  Grupo de ${groupSize} visitante(s) llegó`);
   }
 
   createVisit(visitId: number, visitorName: string, department: string): void {
-    this.info(`[CREATE VISIT] 📝 Visit ID: ${visitId} - ${visitorName} visitando ${department}`);
+    this.info(`[CREATE VISIT]  Visit ID: ${visitId} - ${visitorName} visitando ${department}`);
   }
 
   closeVisit(visitId: number, duration: string): void {
-    this.info(`[CLOSE VISIT] ✅ Visit ID: ${visitId} - Duración: ${duration}`);
+    this.info(`[CLOSE VISIT]  Visit ID: ${visitId} - Duración: ${duration}`);
   }
 }
 
@@ -491,8 +491,8 @@ export const logger = new Logger(LOG_CONFIG.level);
 
 **Salida**:
 ```
-[2026-02-15 08:15:23] [INFO] [ARRIVAL] 👥 Grupo de 2 visitante(s) llegó
-[2026-02-15 08:15:24] [INFO] [CREATE VISIT] 📝 Visit ID: 1247 - María Rodríguez visitando Tecnología
+[2026-02-15 08:15:23] [INFO] [ARRIVAL]  Grupo de 2 visitante(s) llegó
+[2026-02-15 08:15:24] [INFO] [CREATE VISIT]  Visit ID: 1247 - María Rodríguez visitando Tecnología
 ```
 
 ---

@@ -3,9 +3,17 @@ import type { Visit, CreateVisitRequest, VisitsApiResponse } from '../types/visi
 
 export const visitApi = {
   getAll: async (): Promise<VisitsApiResponse> => {
-  const response = await api.get<VisitsApiResponse>('/visit');
-  return response.data;
-},
+    const response = await api.get<VisitsApiResponse>('/visit');
+    return response.data;
+  },
+
+  getPaged: async (page: number, perPage: number, search?: string, statusId?: number): Promise<VisitsApiResponse> => {
+    const params: Record<string, string | number> = { page, per_page: perPage };
+    if (search) params.search = search;
+    if (statusId !== undefined) params.status_id = statusId;
+    const response = await api.get<VisitsApiResponse>('/visit', { params });
+    return response.data;
+  },
 
   getById: async (id: number): Promise<Visit> => {
     const response = await api.get<{ data: Visit }>(`/visit/${id}`);

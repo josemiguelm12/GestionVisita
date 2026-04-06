@@ -85,6 +85,18 @@ let dayStats: DayStats = {
   unclosedVisits: 0,
 };
 
+/**
+ * Contadores globales acumulados (todos los días)
+ */
+let totalStats = {
+  visitsCreated: 0,
+  visitsClosed: 0,
+  visitorsRegistered: 0,
+  daysSimulated: 0,
+};
+
+let simulationStartTime = Date.now();
+
 // ============================================
 // SIMULACIÓN DE LLEGADA
 // ============================================
@@ -300,6 +312,12 @@ export async function simulateWorkday(): Promise<void> {
   // Esperar a que termine el día laboral
   await waitForEndOfDay();
 
+  // Acumular totales globales
+  totalStats.daysSimulated++;
+  totalStats.visitsCreated += dayStats.visitsCreated;
+  totalStats.visitsClosed += dayStats.visitsClosed;
+  totalStats.visitorsRegistered += dayStats.visitorsRegistered;
+
   // Mostrar resumen del día
   logger.dayFinished(
     today,
@@ -308,7 +326,16 @@ export async function simulateWorkday(): Promise<void> {
   );
 
   logger.info(`   Visitantes registrados: ${dayStats.visitorsRegistered}`);
-  logger.info(`   Visitas sin cerrar: ${dayStats.unclosedVisits}\n`);
+  logger.info(`   Visitas sin cerrar: ${dayStats.unclosedVisits}`);
+
+  // Mostrar contadores acumulados
+  const elapsedMs = Date.now() - simulationStartTime;
+  const elapsedMin = Math.floor(elapsedMs / 60000);
+  const elapsedSec = Math.floor((elapsedMs % 60000) / 1000);
+  logger.info(`\n📊 TOTALES ACUMULADOS (${totalStats.daysSimulated} días simulados | ⏱ ${elapsedMin}m ${elapsedSec}s):`);
+  logger.info(`   🏢 Visitas creadas  : ${totalStats.visitsCreated}`);
+  logger.info(`   ✅ Visitas cerradas : ${totalStats.visitsClosed}`);
+  logger.info(`   👤 Visitantes reg.  : ${totalStats.visitorsRegistered}\n`);
 }
 
 /**

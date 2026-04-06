@@ -3,7 +3,7 @@ using GestionVisitaAPI.Models;
 namespace GestionVisitaAPI.Repositories.Interfaces;
 
 /// <summary>
-/// Repositorio específico para Visitor
+/// Repositorio especï¿½fico para Visitor
 /// </summary>
 public interface IVisitorRepository : IRepository<Visitor>
 {
@@ -12,4 +12,5 @@ public interface IVisitorRepository : IRepository<Visitor>
     Task<IEnumerable<Visitor>> GetVisitorsWithActiveVisitsAsync();
     Task<IEnumerable<Visitor>> GetFrequentVisitorsAsync(int minVisits = 5);
     Task<Visitor?> GetVisitorWithVisitsAsync(int id);
+    Task<(IEnumerable<Visitor> Items, int Total)> GetPagedAsync(int page, int pageSize, string? search = null);
 }

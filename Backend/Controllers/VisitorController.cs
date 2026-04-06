@@ -31,18 +31,20 @@ public class VisitorController : ControllerBase
     }
 
     /// <summary>
-    /// Listar todos los visitantes
-    /// GET /api/visitor
+    /// Listar visitantes con paginación y búsqueda server-side
+    /// GET /api/visitor?page=1&pageSize=10&search=texto
     /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetVisitors()
+    public async Task<IActionResult> GetVisitors([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
     {
         try
         {
-            var visitors = await _visitorRepository.GetAllAsync();
-            
-            // Proyectar a DTOs para reducir el tamaño de la respuesta
+            if (page < 1) page = 1;
+            if (pageSize < 1 || pageSize > 100) pageSize = 10;
+
+            var (visitors, total) = await _visitorRepository.GetPagedAsync(page, pageSize, search);
+
             var visitorsDto = visitors.Select(v => new VisitorResponseDto
             {
                 Id = v.Id,
@@ -56,8 +58,15 @@ public class VisitorController : ControllerBase
                 Institution = v.Institution,
                 CreatedAt = v.CreatedAt
             }).ToList();
-            
-            return Ok(new { data = visitorsDto });
+
+            return Ok(new
+            {
+                data = visitorsDto,
+                total,
+                page,
+                pageSize,
+                totalPages = (int)Math.Ceiling((double)total / pageSize)
+            });
         }
         catch (Exception ex)
         {
